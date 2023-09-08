@@ -371,83 +371,83 @@ templates.</p>
 <p>We test the null hypothesis that the parameters adhere to the Rasch
 model against the alternative hypothesis that the parameters are better
 described by a 2PL model.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>h_1PLvs2PL <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">res =</span> <span class="cf">function</span>(altpars, <span class="at">nullpars =</span> <span class="cn">NULL</span>) {</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">1</span>]])</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">n.items =</span> n.items, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">Amat =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="fu">rep</span>(<span class="dv">0</span>, (n.items <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>            <span class="dv">2</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>            (<span class="cf">function</span>(x) <span class="fu">rep</span>(x, n.items <span class="sc">-</span> <span class="dv">2</span>))() <span class="sc">|&gt;</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>            <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>            <span class="fu">matrix</span>(<span class="at">ncol =</span> n.items <span class="sc">*</span> <span class="dv">2</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">cvec =</span> <span class="dv">0</span>, <span class="at">model =</span> mirt<span class="sc">::</span><span class="fu">mirt.model</span>(<span class="fu">paste</span>(<span class="st">&quot;F = 1-&quot;</span>,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>            n.items, <span class="st">&quot;</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="st">                           CONSTRAIN = (1-&quot;</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>            n.items, <span class="st">&quot;, a1)&quot;</span>)))</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>}, <span class="at">unres =</span> <span class="cf">function</span>(altpars) {</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">parsets =</span> altpars, <span class="at">model =</span> <span class="dv">1</span>, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>,</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">longpars =</span> <span class="fu">pars.long</span>(<span class="at">pars =</span> altpars, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>))</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>}, <span class="at">maximizeL =</span> <span class="cf">function</span>(hyp) {</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Hypothesis-specific algorithm to find the</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># maximum likelihood restricted parameter set</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    maxlpreload <span class="ot">&lt;-</span> <span class="cf">function</span>(pars, funs) {</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        <span class="co"># returns the density for each response</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>        <span class="co"># pattern under the model parameters pars</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>        patterns <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">expand.grid</span>(<span class="fu">lapply</span>(<span class="fu">seq_len</span>(<span class="fu">length</span>(pars<span class="sc">$</span>a)),</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>            <span class="cf">function</span>(x) <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))))</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>        pre <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(patterns))) {</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>            pre[i] <span class="ot">&lt;-</span> funs<span class="sc">$</span><span class="fu">g</span>(patterns[i, ], pars)</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>(pre)</span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    maxl <span class="ot">&lt;-</span> <span class="cf">function</span>(x, pars, pre, funs) {</span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>        <span class="co"># calculates the likelihood of parameters</span></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>        <span class="co"># x given model &#39;pars&#39;</span></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>        patterns <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">expand.grid</span>(<span class="fu">lapply</span>(<span class="fu">seq_len</span>(<span class="fu">length</span>(pars<span class="sc">$</span>a)),</span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>            <span class="cf">function</span>(x) <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))))</span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>        x <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="fu">rep</span>(x[<span class="dv">1</span>], <span class="fu">length</span>(pars<span class="sc">$</span>a)), <span class="at">d =</span> x[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(x)])</span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>        res <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(patterns))) {</span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>            px <span class="ot">&lt;-</span> pre[i]</span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>            qx <span class="ot">&lt;-</span> funs<span class="sc">$</span><span class="fu">g</span>(patterns[i, ], x)</span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>            res[i] <span class="ot">&lt;-</span> {</span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>                px <span class="sc">*</span> <span class="fu">log</span>(qx)</span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>            }</span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>        re <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">sum</span>(res)</span>
-<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>    resmod <span class="ot">&lt;-</span> hyp<span class="sc">$</span>resmod</span>
-<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>    unresmod <span class="ot">&lt;-</span> hyp<span class="sc">$</span>unresmod</span>
-<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>    pars <span class="ot">&lt;-</span> unresmod<span class="sc">$</span>parsets</span>
-<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>    funs <span class="ot">&lt;-</span> <span class="fu">load.functions</span>(unresmod<span class="sc">$</span>itemtype)</span>
-<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>    startval <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">mean</span>(pars<span class="sc">$</span>a), <span class="fu">as.numeric</span>(pars<span class="sc">$</span>d))</span>
-<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>    maxlpre <span class="ot">&lt;-</span> <span class="fu">maxlpreload</span>(pars, funs)</span>
-<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>    optpar <span class="ot">&lt;-</span> stats<span class="sc">::</span><span class="fu">optim</span>(startval, <span class="cf">function</span>(x) {</span>
-<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>        <span class="fu">maxl</span>(x, pars, maxlpre, funs)</span>
-<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>    }, <span class="at">method =</span> <span class="st">&quot;BFGS&quot;</span>)</span>
-<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>    re <span class="ot">&lt;-</span> pars</span>
-<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>    re<span class="sc">$</span>a <span class="ot">&lt;-</span> <span class="fu">rep</span>(optpar<span class="sc">$</span>par[<span class="dv">1</span>], <span class="fu">length</span>(pars<span class="sc">$</span>a))</span>
-<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>    re<span class="sc">$</span>d <span class="ot">&lt;-</span> optpar<span class="sc">$</span>par[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(optpar<span class="sc">$</span>par)]</span>
-<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
-<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>h_1PLvs2PL <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">res =</span> <span class="cf">function</span>(altpars, <span class="at">nullpars =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">1</span>]])</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">n.items =</span> n.items, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>        <span class="at">Amat =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="fu">rep</span>(<span class="dv">0</span>, (n.items <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>            <span class="dv">2</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>            (<span class="cf">function</span>(x) <span class="fu">rep</span>(x, n.items <span class="sc">-</span> <span class="dv">2</span>))() <span class="sc">|&gt;</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>            <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>            <span class="fu">matrix</span>(<span class="at">ncol =</span> n.items <span class="sc">*</span> <span class="dv">2</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>        <span class="at">cvec =</span> <span class="dv">0</span>, <span class="at">model =</span> mirt<span class="sc">::</span><span class="fu">mirt.model</span>(<span class="fu">paste</span>(<span class="st">&quot;F = 1-&quot;</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>            n.items, <span class="st">&quot;</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="st">                           CONSTRAIN = (1-&quot;</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>            n.items, <span class="st">&quot;, a1)&quot;</span>)))</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>}, <span class="at">unres =</span> <span class="cf">function</span>(altpars) {</span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">parsets =</span> altpars, <span class="at">model =</span> <span class="dv">1</span>, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>,</span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>        <span class="at">longpars =</span> <span class="fu">pars.long</span>(<span class="at">pars =</span> altpars, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>))</span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a>}, <span class="at">maximizeL =</span> <span class="cf">function</span>(hyp) {</span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a>    <span class="co"># Hypothesis-specific algorithm to find the</span></span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a>    <span class="co"># maximum likelihood restricted parameter set</span></span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a>    maxlpreload <span class="ot">&lt;-</span> <span class="cf">function</span>(pars, funs) {</span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a>        <span class="co"># returns the density for each response</span></span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a>        <span class="co"># pattern under the model parameters pars</span></span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a>        patterns <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">expand.grid</span>(<span class="fu">lapply</span>(<span class="fu">seq_len</span>(<span class="fu">length</span>(pars<span class="sc">$</span>a)),</span>
+<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a>            <span class="cf">function</span>(x) <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))))</span>
+<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a>        pre <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb1-34"><a href="#cb1-34" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(patterns))) {</span>
+<span id="cb1-35"><a href="#cb1-35" tabindex="-1"></a>            pre[i] <span class="ot">&lt;-</span> funs<span class="sc">$</span><span class="fu">g</span>(patterns[i, ], pars)</span>
+<span id="cb1-36"><a href="#cb1-36" tabindex="-1"></a>        }</span>
+<span id="cb1-37"><a href="#cb1-37" tabindex="-1"></a></span>
+<span id="cb1-38"><a href="#cb1-38" tabindex="-1"></a>        <span class="fu">return</span>(pre)</span>
+<span id="cb1-39"><a href="#cb1-39" tabindex="-1"></a>    }</span>
+<span id="cb1-40"><a href="#cb1-40" tabindex="-1"></a></span>
+<span id="cb1-41"><a href="#cb1-41" tabindex="-1"></a>    maxl <span class="ot">&lt;-</span> <span class="cf">function</span>(x, pars, pre, funs) {</span>
+<span id="cb1-42"><a href="#cb1-42" tabindex="-1"></a>        <span class="co"># calculates the likelihood of parameters</span></span>
+<span id="cb1-43"><a href="#cb1-43" tabindex="-1"></a>        <span class="co"># x given model &#39;pars&#39;</span></span>
+<span id="cb1-44"><a href="#cb1-44" tabindex="-1"></a></span>
+<span id="cb1-45"><a href="#cb1-45" tabindex="-1"></a>        patterns <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">expand.grid</span>(<span class="fu">lapply</span>(<span class="fu">seq_len</span>(<span class="fu">length</span>(pars<span class="sc">$</span>a)),</span>
+<span id="cb1-46"><a href="#cb1-46" tabindex="-1"></a>            <span class="cf">function</span>(x) <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))))</span>
+<span id="cb1-47"><a href="#cb1-47" tabindex="-1"></a>        x <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="fu">rep</span>(x[<span class="dv">1</span>], <span class="fu">length</span>(pars<span class="sc">$</span>a)), <span class="at">d =</span> x[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(x)])</span>
+<span id="cb1-48"><a href="#cb1-48" tabindex="-1"></a></span>
+<span id="cb1-49"><a href="#cb1-49" tabindex="-1"></a>        res <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb1-50"><a href="#cb1-50" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(patterns))) {</span>
+<span id="cb1-51"><a href="#cb1-51" tabindex="-1"></a>            px <span class="ot">&lt;-</span> pre[i]</span>
+<span id="cb1-52"><a href="#cb1-52" tabindex="-1"></a>            qx <span class="ot">&lt;-</span> funs<span class="sc">$</span><span class="fu">g</span>(patterns[i, ], x)</span>
+<span id="cb1-53"><a href="#cb1-53" tabindex="-1"></a>            res[i] <span class="ot">&lt;-</span> {</span>
+<span id="cb1-54"><a href="#cb1-54" tabindex="-1"></a>                px <span class="sc">*</span> <span class="fu">log</span>(qx)</span>
+<span id="cb1-55"><a href="#cb1-55" tabindex="-1"></a>            }</span>
+<span id="cb1-56"><a href="#cb1-56" tabindex="-1"></a>        }</span>
+<span id="cb1-57"><a href="#cb1-57" tabindex="-1"></a>        re <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">sum</span>(res)</span>
+<span id="cb1-58"><a href="#cb1-58" tabindex="-1"></a>    }</span>
+<span id="cb1-59"><a href="#cb1-59" tabindex="-1"></a>    resmod <span class="ot">&lt;-</span> hyp<span class="sc">$</span>resmod</span>
+<span id="cb1-60"><a href="#cb1-60" tabindex="-1"></a>    unresmod <span class="ot">&lt;-</span> hyp<span class="sc">$</span>unresmod</span>
+<span id="cb1-61"><a href="#cb1-61" tabindex="-1"></a></span>
+<span id="cb1-62"><a href="#cb1-62" tabindex="-1"></a>    pars <span class="ot">&lt;-</span> unresmod<span class="sc">$</span>parsets</span>
+<span id="cb1-63"><a href="#cb1-63" tabindex="-1"></a></span>
+<span id="cb1-64"><a href="#cb1-64" tabindex="-1"></a>    funs <span class="ot">&lt;-</span> <span class="fu">load.functions</span>(unresmod<span class="sc">$</span>itemtype)</span>
+<span id="cb1-65"><a href="#cb1-65" tabindex="-1"></a></span>
+<span id="cb1-66"><a href="#cb1-66" tabindex="-1"></a>    startval <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">mean</span>(pars<span class="sc">$</span>a), <span class="fu">as.numeric</span>(pars<span class="sc">$</span>d))</span>
+<span id="cb1-67"><a href="#cb1-67" tabindex="-1"></a></span>
+<span id="cb1-68"><a href="#cb1-68" tabindex="-1"></a>    maxlpre <span class="ot">&lt;-</span> <span class="fu">maxlpreload</span>(pars, funs)</span>
+<span id="cb1-69"><a href="#cb1-69" tabindex="-1"></a>    optpar <span class="ot">&lt;-</span> stats<span class="sc">::</span><span class="fu">optim</span>(startval, <span class="cf">function</span>(x) {</span>
+<span id="cb1-70"><a href="#cb1-70" tabindex="-1"></a>        <span class="fu">maxl</span>(x, pars, maxlpre, funs)</span>
+<span id="cb1-71"><a href="#cb1-71" tabindex="-1"></a>    }, <span class="at">method =</span> <span class="st">&quot;BFGS&quot;</span>)</span>
+<span id="cb1-72"><a href="#cb1-72" tabindex="-1"></a>    re <span class="ot">&lt;-</span> pars</span>
+<span id="cb1-73"><a href="#cb1-73" tabindex="-1"></a>    re<span class="sc">$</span>a <span class="ot">&lt;-</span> <span class="fu">rep</span>(optpar<span class="sc">$</span>par[<span class="dv">1</span>], <span class="fu">length</span>(pars<span class="sc">$</span>a))</span>
+<span id="cb1-74"><a href="#cb1-74" tabindex="-1"></a>    re<span class="sc">$</span>d <span class="ot">&lt;-</span> optpar<span class="sc">$</span>par[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(optpar<span class="sc">$</span>par)]</span>
+<span id="cb1-75"><a href="#cb1-75" tabindex="-1"></a></span>
+<span id="cb1-76"><a href="#cb1-76" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
+<span id="cb1-77"><a href="#cb1-77" tabindex="-1"></a>})</span></code></pre></div>
 </div>
 <div id="h_dif2pl" class="section level2">
 <h2>h_DIF2PL</h2>
@@ -455,465 +455,465 @@ described by a 2PL model.</p>
 alternative hypothesis is that certain item parameters differ in two
 known participant groups. Which item parameters differ can be determined
 in the altpars object, see the “demo” vignette for an example.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>h_DIF2PL <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">res =</span> <span class="cf">function</span>(altpars, <span class="at">nullpars =</span> <span class="cn">NULL</span>) {</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">1</span>]][[<span class="dv">1</span>]])</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    reA <span class="ot">&lt;-</span> altpars[[<span class="dv">1</span>]]</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    reB <span class="ot">&lt;-</span> altpars[[<span class="dv">2</span>]]</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    hyp_a <span class="ot">&lt;-</span> <span class="fu">which</span>(reA<span class="sc">$</span>a <span class="sc">!=</span> reB<span class="sc">$</span>a)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    hyp_d <span class="ot">&lt;-</span> <span class="fu">which</span>(reA<span class="sc">$</span>d <span class="sc">!=</span> reB<span class="sc">$</span>d)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    Amat <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> <span class="fu">length</span>(<span class="fu">c</span>(hyp_a, hyp_d)),</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">ncol =</span> n.items <span class="sc">*</span> <span class="dv">2</span>)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    i <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (j <span class="cf">in</span> hyp_a) {</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        Amat[i, j <span class="sc">*</span> <span class="dv">2</span> <span class="sc">-</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        i <span class="ot">&lt;-</span> i <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (j <span class="cf">in</span> hyp_d) {</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>        Amat[i, j <span class="sc">*</span> <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        i <span class="ot">&lt;-</span> i <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    Amat <span class="ot">&lt;-</span> <span class="fu">cbind</span>(Amat, <span class="sc">-</span>Amat)</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    delcols <span class="ot">&lt;-</span> (<span class="fu">colSums</span>(Amat) <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">&amp;</span> (<span class="dv">1</span><span class="sc">:</span>(n.items <span class="sc">*</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>        <span class="dv">2</span> <span class="sc">*</span> <span class="dv">2</span>)) <span class="sc">&gt;</span> <span class="dv">2</span> <span class="sc">*</span> n.items</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    relpars <span class="ot">&lt;-</span> <span class="fu">colSums</span>(Amat[, <span class="dv">1</span><span class="sc">:</span>(<span class="dv">2</span> <span class="sc">*</span> n.items)]) <span class="sc">==</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>        <span class="dv">1</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    Amat <span class="ot">&lt;-</span> Amat[, <span class="sc">!</span>delcols]</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">n.items =</span> n.items, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>,</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>        <span class="at">Amat =</span> Amat, <span class="at">cvec =</span> <span class="dv">0</span>, <span class="at">model =</span> mirt<span class="sc">::</span><span class="fu">mirt.model</span>(<span class="fu">paste</span>(<span class="st">&quot;F = 1-&quot;</span>,</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>            n.items, <span class="st">&quot;</span></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="st">                       CONSTRAINB = (1-&quot;</span>,</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>            n.items, <span class="st">&quot;, d), (1-&quot;</span>, n.items, <span class="st">&quot;, a1)&quot;</span>)),</span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>        <span class="at">multigroup =</span> <span class="cn">TRUE</span>, <span class="at">delcols =</span> delcols, <span class="at">relpars =</span> relpars)</span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>}, <span class="at">unres =</span> <span class="cf">function</span>(altpars) {</span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">1</span>]][[<span class="dv">1</span>]])</span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>    reA <span class="ot">&lt;-</span> altpars[[<span class="dv">1</span>]]</span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    reB <span class="ot">&lt;-</span> altpars[[<span class="dv">2</span>]]</span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>    reA<span class="sc">$</span>itemtype <span class="ot">&lt;-</span> reB<span class="sc">$</span>itemtype <span class="ot">&lt;-</span> <span class="st">&quot;2PL&quot;</span></span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>    reA<span class="sc">$</span>longpars <span class="ot">&lt;-</span> <span class="fu">pars.long</span>(<span class="at">pars =</span> reA, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>)</span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>    reB<span class="sc">$</span>longpars <span class="ot">&lt;-</span> <span class="fu">pars.long</span>(<span class="at">pars =</span> reB, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>)</span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>    constrain_a <span class="ot">&lt;-</span> <span class="fu">which</span>(reA<span class="sc">$</span>a <span class="sc">==</span> reB<span class="sc">$</span>a)</span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>    constrain_d <span class="ot">&lt;-</span> <span class="fu">which</span>(reA<span class="sc">$</span>d <span class="sc">==</span> reB<span class="sc">$</span>d)</span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>    hyp_a <span class="ot">&lt;-</span> <span class="fu">which</span>(reA<span class="sc">$</span>a <span class="sc">!=</span> reB<span class="sc">$</span>a)</span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>    hyp_d <span class="ot">&lt;-</span> <span class="fu">which</span>(reA<span class="sc">$</span>d <span class="sc">!=</span> reB<span class="sc">$</span>d)</span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>    Amat <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> <span class="fu">length</span>(<span class="fu">c</span>(hyp_a, hyp_d)),</span>
-<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>        <span class="at">ncol =</span> n.items <span class="sc">*</span> <span class="dv">2</span>)</span>
-<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>    i <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (j <span class="cf">in</span> hyp_a) {</span>
-<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>        Amat[i, j <span class="sc">*</span> <span class="dv">2</span> <span class="sc">-</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>        i <span class="ot">&lt;-</span> i <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (j <span class="cf">in</span> hyp_d) {</span>
-<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>        Amat[i, j <span class="sc">*</span> <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>        i <span class="ot">&lt;-</span> i <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>    Amat <span class="ot">&lt;-</span> <span class="fu">cbind</span>(Amat, <span class="sc">-</span>Amat)</span>
-<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>    delcols <span class="ot">&lt;-</span> (<span class="fu">colSums</span>(Amat) <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">&amp;</span> (<span class="dv">1</span><span class="sc">:</span>(n.items <span class="sc">*</span></span>
-<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>        <span class="dv">2</span> <span class="sc">*</span> <span class="dv">2</span>)) <span class="sc">&gt;</span> <span class="dv">2</span> <span class="sc">*</span> n.items</span>
-<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>    longpars <span class="ot">&lt;-</span> <span class="fu">c</span>(reA<span class="sc">$</span>longpars, reB<span class="sc">$</span>longpars)[<span class="sc">!</span>delcols]</span>
-<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">parsets =</span> <span class="fu">list</span>(reA, reB), <span class="at">model =</span> mirt<span class="sc">::</span><span class="fu">mirt.model</span>(<span class="fu">paste</span>(<span class="st">&quot;F = 1-&quot;</span>,</span>
-<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>        n.items, <span class="st">&quot;</span></span>
-<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a><span class="st">                     CONSTRAINB = (&quot;</span>,</span>
-<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>        <span class="fu">paste</span>(constrain_d, <span class="at">collapse =</span> <span class="st">&quot;,&quot;</span>), <span class="st">&quot;, d), (&quot;</span>,</span>
-<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>        <span class="fu">paste</span>(constrain_a, <span class="at">collapse =</span> <span class="st">&quot;,&quot;</span>), <span class="st">&quot;, a1)&quot;</span>)),</span>
-<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>        <span class="at">longpars =</span> longpars, <span class="at">multigroup =</span> <span class="cn">TRUE</span>, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>,</span>
-<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>        <span class="at">delcols =</span> delcols)</span>
-<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
-<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>}, <span class="at">maximizeL =</span> <span class="cf">function</span>(hyp) {</span>
-<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Hypothesis-specific algorithm to find the</span></span>
-<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>    <span class="co"># maximum likelihood restricted parameter set</span></span>
-<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>    <span class="co"># L Optimizer</span></span>
-<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>    maxl <span class="ot">&lt;-</span> <span class="cf">function</span>(x, pars1, pars2, i) {</span>
-<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>        px1 <span class="ot">&lt;-</span> <span class="cf">function</span>(th) {</span>
-<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>            funs<span class="sc">$</span><span class="fu">f</span>(th, pars1<span class="sc">$</span>a[i], pars1<span class="sc">$</span>d[i], <span class="dv">1</span>)</span>
-<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a>        px2 <span class="ot">&lt;-</span> <span class="cf">function</span>(th) {</span>
-<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>            funs<span class="sc">$</span><span class="fu">f</span>(th, pars2<span class="sc">$</span>a[i], pars2<span class="sc">$</span>d[i], <span class="dv">1</span>)</span>
-<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a>        qx <span class="ot">&lt;-</span> <span class="cf">function</span>(th) {</span>
-<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a>            funs<span class="sc">$</span><span class="fu">f</span>(th, x[<span class="dv">1</span>], x[<span class="dv">2</span>], <span class="dv">1</span>)</span>
-<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>        kl <span class="ot">&lt;-</span> <span class="cf">function</span>(th) {</span>
-<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>            <span class="fu">px1</span>(th) <span class="sc">*</span> <span class="fu">log</span>(<span class="fu">qx</span>(th)) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">-</span> <span class="fu">px1</span>(th)) <span class="sc">*</span></span>
-<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>                <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">-</span> <span class="fu">qx</span>(th)) <span class="sc">+</span> <span class="fu">px2</span>(th) <span class="sc">*</span> <span class="fu">log</span>(<span class="fu">qx</span>(th)) <span class="sc">+</span></span>
-<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span> <span class="sc">-</span> <span class="fu">px2</span>(th)) <span class="sc">*</span> <span class="fu">log</span>((<span class="dv">1</span> <span class="sc">-</span> <span class="fu">qx</span>(th)))</span>
-<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a>        re <span class="ot">&lt;-</span> <span class="sc">-</span>spatstat.random<span class="sc">::</span><span class="fu">gauss.hermite</span>(kl, <span class="at">order =</span> <span class="dv">20</span>)</span>
-<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a>    resmod <span class="ot">&lt;-</span> hyp<span class="sc">$</span>resmod</span>
-<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a>    unresmod <span class="ot">&lt;-</span> hyp<span class="sc">$</span>unresmod</span>
-<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a>    pars <span class="ot">&lt;-</span> unresmod<span class="sc">$</span>parsets</span>
-<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a>    pars1 <span class="ot">&lt;-</span> pars[[<span class="dv">1</span>]]</span>
-<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a>    pars2 <span class="ot">&lt;-</span> pars[[<span class="dv">2</span>]]</span>
-<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a>    funs <span class="ot">&lt;-</span> <span class="fu">load.functions</span>(pars1<span class="sc">$</span>itemtype)</span>
-<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a>    re <span class="ot">&lt;-</span> pars1</span>
-<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">length</span>(pars1<span class="sc">$</span>a))) {</span>
-<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a>        startval <span class="ot">&lt;-</span> <span class="fu">c</span>(re<span class="sc">$</span>a[i], re<span class="sc">$</span>d[i])</span>
-<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a>        optpar <span class="ot">&lt;-</span> stats<span class="sc">::</span><span class="fu">optim</span>(startval, <span class="cf">function</span>(x) {</span>
-<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a>            <span class="fu">maxl</span>(x, pars1, pars2, i)</span>
-<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a>        }, <span class="at">method =</span> <span class="st">&quot;BFGS&quot;</span>)</span>
-<span id="cb2-125"><a href="#cb2-125" aria-hidden="true" tabindex="-1"></a>        re<span class="sc">$</span>a[i] <span class="ot">&lt;-</span> optpar<span class="sc">$</span>par[<span class="dv">1</span>]</span>
-<span id="cb2-126"><a href="#cb2-126" aria-hidden="true" tabindex="-1"></a>        re<span class="sc">$</span>d[i] <span class="ot">&lt;-</span> optpar<span class="sc">$</span>par[<span class="dv">2</span>]</span>
-<span id="cb2-127"><a href="#cb2-127" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb2-128"><a href="#cb2-128" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
-<span id="cb2-129"><a href="#cb2-129" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>h_DIF2PL <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">res =</span> <span class="cf">function</span>(altpars, <span class="at">nullpars =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">1</span>]][[<span class="dv">1</span>]])</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    reA <span class="ot">&lt;-</span> altpars[[<span class="dv">1</span>]]</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>    reB <span class="ot">&lt;-</span> altpars[[<span class="dv">2</span>]]</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>    hyp_a <span class="ot">&lt;-</span> <span class="fu">which</span>(reA<span class="sc">$</span>a <span class="sc">!=</span> reB<span class="sc">$</span>a)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>    hyp_d <span class="ot">&lt;-</span> <span class="fu">which</span>(reA<span class="sc">$</span>d <span class="sc">!=</span> reB<span class="sc">$</span>d)</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>    Amat <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> <span class="fu">length</span>(<span class="fu">c</span>(hyp_a, hyp_d)),</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>        <span class="at">ncol =</span> n.items <span class="sc">*</span> <span class="dv">2</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>    i <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>    <span class="cf">for</span> (j <span class="cf">in</span> hyp_a) {</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>        Amat[i, j <span class="sc">*</span> <span class="dv">2</span> <span class="sc">-</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>        i <span class="ot">&lt;-</span> i <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>    }</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>    <span class="cf">for</span> (j <span class="cf">in</span> hyp_d) {</span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>        Amat[i, j <span class="sc">*</span> <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>        i <span class="ot">&lt;-</span> i <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>    }</span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>    Amat <span class="ot">&lt;-</span> <span class="fu">cbind</span>(Amat, <span class="sc">-</span>Amat)</span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>    delcols <span class="ot">&lt;-</span> (<span class="fu">colSums</span>(Amat) <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">&amp;</span> (<span class="dv">1</span><span class="sc">:</span>(n.items <span class="sc">*</span></span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>        <span class="dv">2</span> <span class="sc">*</span> <span class="dv">2</span>)) <span class="sc">&gt;</span> <span class="dv">2</span> <span class="sc">*</span> n.items</span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>    relpars <span class="ot">&lt;-</span> <span class="fu">colSums</span>(Amat[, <span class="dv">1</span><span class="sc">:</span>(<span class="dv">2</span> <span class="sc">*</span> n.items)]) <span class="sc">==</span></span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>        <span class="dv">1</span></span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>    Amat <span class="ot">&lt;-</span> Amat[, <span class="sc">!</span>delcols]</span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">n.items =</span> n.items, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>,</span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a>        <span class="at">Amat =</span> Amat, <span class="at">cvec =</span> <span class="dv">0</span>, <span class="at">model =</span> mirt<span class="sc">::</span><span class="fu">mirt.model</span>(<span class="fu">paste</span>(<span class="st">&quot;F = 1-&quot;</span>,</span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a>            n.items, <span class="st">&quot;</span></span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a><span class="st">                       CONSTRAINB = (1-&quot;</span>,</span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a>            n.items, <span class="st">&quot;, d), (1-&quot;</span>, n.items, <span class="st">&quot;, a1)&quot;</span>)),</span>
+<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a>        <span class="at">multigroup =</span> <span class="cn">TRUE</span>, <span class="at">delcols =</span> delcols, <span class="at">relpars =</span> relpars)</span>
+<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a></span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a>}, <span class="at">unres =</span> <span class="cf">function</span>(altpars) {</span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a></span>
+<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">1</span>]][[<span class="dv">1</span>]])</span>
+<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a></span>
+<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a>    reA <span class="ot">&lt;-</span> altpars[[<span class="dv">1</span>]]</span>
+<span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a>    reB <span class="ot">&lt;-</span> altpars[[<span class="dv">2</span>]]</span>
+<span id="cb2-45"><a href="#cb2-45" tabindex="-1"></a></span>
+<span id="cb2-46"><a href="#cb2-46" tabindex="-1"></a>    reA<span class="sc">$</span>itemtype <span class="ot">&lt;-</span> reB<span class="sc">$</span>itemtype <span class="ot">&lt;-</span> <span class="st">&quot;2PL&quot;</span></span>
+<span id="cb2-47"><a href="#cb2-47" tabindex="-1"></a></span>
+<span id="cb2-48"><a href="#cb2-48" tabindex="-1"></a>    reA<span class="sc">$</span>longpars <span class="ot">&lt;-</span> <span class="fu">pars.long</span>(<span class="at">pars =</span> reA, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>)</span>
+<span id="cb2-49"><a href="#cb2-49" tabindex="-1"></a>    reB<span class="sc">$</span>longpars <span class="ot">&lt;-</span> <span class="fu">pars.long</span>(<span class="at">pars =</span> reB, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>)</span>
+<span id="cb2-50"><a href="#cb2-50" tabindex="-1"></a></span>
+<span id="cb2-51"><a href="#cb2-51" tabindex="-1"></a>    constrain_a <span class="ot">&lt;-</span> <span class="fu">which</span>(reA<span class="sc">$</span>a <span class="sc">==</span> reB<span class="sc">$</span>a)</span>
+<span id="cb2-52"><a href="#cb2-52" tabindex="-1"></a>    constrain_d <span class="ot">&lt;-</span> <span class="fu">which</span>(reA<span class="sc">$</span>d <span class="sc">==</span> reB<span class="sc">$</span>d)</span>
+<span id="cb2-53"><a href="#cb2-53" tabindex="-1"></a></span>
+<span id="cb2-54"><a href="#cb2-54" tabindex="-1"></a>    hyp_a <span class="ot">&lt;-</span> <span class="fu">which</span>(reA<span class="sc">$</span>a <span class="sc">!=</span> reB<span class="sc">$</span>a)</span>
+<span id="cb2-55"><a href="#cb2-55" tabindex="-1"></a>    hyp_d <span class="ot">&lt;-</span> <span class="fu">which</span>(reA<span class="sc">$</span>d <span class="sc">!=</span> reB<span class="sc">$</span>d)</span>
+<span id="cb2-56"><a href="#cb2-56" tabindex="-1"></a></span>
+<span id="cb2-57"><a href="#cb2-57" tabindex="-1"></a>    Amat <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> <span class="fu">length</span>(<span class="fu">c</span>(hyp_a, hyp_d)),</span>
+<span id="cb2-58"><a href="#cb2-58" tabindex="-1"></a>        <span class="at">ncol =</span> n.items <span class="sc">*</span> <span class="dv">2</span>)</span>
+<span id="cb2-59"><a href="#cb2-59" tabindex="-1"></a></span>
+<span id="cb2-60"><a href="#cb2-60" tabindex="-1"></a>    i <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb2-61"><a href="#cb2-61" tabindex="-1"></a>    <span class="cf">for</span> (j <span class="cf">in</span> hyp_a) {</span>
+<span id="cb2-62"><a href="#cb2-62" tabindex="-1"></a>        Amat[i, j <span class="sc">*</span> <span class="dv">2</span> <span class="sc">-</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb2-63"><a href="#cb2-63" tabindex="-1"></a>        i <span class="ot">&lt;-</span> i <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb2-64"><a href="#cb2-64" tabindex="-1"></a>    }</span>
+<span id="cb2-65"><a href="#cb2-65" tabindex="-1"></a>    <span class="cf">for</span> (j <span class="cf">in</span> hyp_d) {</span>
+<span id="cb2-66"><a href="#cb2-66" tabindex="-1"></a>        Amat[i, j <span class="sc">*</span> <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb2-67"><a href="#cb2-67" tabindex="-1"></a>        i <span class="ot">&lt;-</span> i <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb2-68"><a href="#cb2-68" tabindex="-1"></a>    }</span>
+<span id="cb2-69"><a href="#cb2-69" tabindex="-1"></a>    Amat <span class="ot">&lt;-</span> <span class="fu">cbind</span>(Amat, <span class="sc">-</span>Amat)</span>
+<span id="cb2-70"><a href="#cb2-70" tabindex="-1"></a></span>
+<span id="cb2-71"><a href="#cb2-71" tabindex="-1"></a>    delcols <span class="ot">&lt;-</span> (<span class="fu">colSums</span>(Amat) <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">&amp;</span> (<span class="dv">1</span><span class="sc">:</span>(n.items <span class="sc">*</span></span>
+<span id="cb2-72"><a href="#cb2-72" tabindex="-1"></a>        <span class="dv">2</span> <span class="sc">*</span> <span class="dv">2</span>)) <span class="sc">&gt;</span> <span class="dv">2</span> <span class="sc">*</span> n.items</span>
+<span id="cb2-73"><a href="#cb2-73" tabindex="-1"></a></span>
+<span id="cb2-74"><a href="#cb2-74" tabindex="-1"></a>    longpars <span class="ot">&lt;-</span> <span class="fu">c</span>(reA<span class="sc">$</span>longpars, reB<span class="sc">$</span>longpars)[<span class="sc">!</span>delcols]</span>
+<span id="cb2-75"><a href="#cb2-75" tabindex="-1"></a></span>
+<span id="cb2-76"><a href="#cb2-76" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">parsets =</span> <span class="fu">list</span>(reA, reB), <span class="at">model =</span> mirt<span class="sc">::</span><span class="fu">mirt.model</span>(<span class="fu">paste</span>(<span class="st">&quot;F = 1-&quot;</span>,</span>
+<span id="cb2-77"><a href="#cb2-77" tabindex="-1"></a>        n.items, <span class="st">&quot;</span></span>
+<span id="cb2-78"><a href="#cb2-78" tabindex="-1"></a><span class="st">                     CONSTRAINB = (&quot;</span>,</span>
+<span id="cb2-79"><a href="#cb2-79" tabindex="-1"></a>        <span class="fu">paste</span>(constrain_d, <span class="at">collapse =</span> <span class="st">&quot;,&quot;</span>), <span class="st">&quot;, d), (&quot;</span>,</span>
+<span id="cb2-80"><a href="#cb2-80" tabindex="-1"></a>        <span class="fu">paste</span>(constrain_a, <span class="at">collapse =</span> <span class="st">&quot;,&quot;</span>), <span class="st">&quot;, a1)&quot;</span>)),</span>
+<span id="cb2-81"><a href="#cb2-81" tabindex="-1"></a>        <span class="at">longpars =</span> longpars, <span class="at">multigroup =</span> <span class="cn">TRUE</span>, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>,</span>
+<span id="cb2-82"><a href="#cb2-82" tabindex="-1"></a>        <span class="at">delcols =</span> delcols)</span>
+<span id="cb2-83"><a href="#cb2-83" tabindex="-1"></a></span>
+<span id="cb2-84"><a href="#cb2-84" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
+<span id="cb2-85"><a href="#cb2-85" tabindex="-1"></a>}, <span class="at">maximizeL =</span> <span class="cf">function</span>(hyp) {</span>
+<span id="cb2-86"><a href="#cb2-86" tabindex="-1"></a>    <span class="co"># Hypothesis-specific algorithm to find the</span></span>
+<span id="cb2-87"><a href="#cb2-87" tabindex="-1"></a>    <span class="co"># maximum likelihood restricted parameter set</span></span>
+<span id="cb2-88"><a href="#cb2-88" tabindex="-1"></a>    <span class="co"># L Optimizer</span></span>
+<span id="cb2-89"><a href="#cb2-89" tabindex="-1"></a></span>
+<span id="cb2-90"><a href="#cb2-90" tabindex="-1"></a>    maxl <span class="ot">&lt;-</span> <span class="cf">function</span>(x, pars1, pars2, i) {</span>
+<span id="cb2-91"><a href="#cb2-91" tabindex="-1"></a></span>
+<span id="cb2-92"><a href="#cb2-92" tabindex="-1"></a>        px1 <span class="ot">&lt;-</span> <span class="cf">function</span>(th) {</span>
+<span id="cb2-93"><a href="#cb2-93" tabindex="-1"></a>            funs<span class="sc">$</span><span class="fu">f</span>(th, pars1<span class="sc">$</span>a[i], pars1<span class="sc">$</span>d[i], <span class="dv">1</span>)</span>
+<span id="cb2-94"><a href="#cb2-94" tabindex="-1"></a>        }</span>
+<span id="cb2-95"><a href="#cb2-95" tabindex="-1"></a>        px2 <span class="ot">&lt;-</span> <span class="cf">function</span>(th) {</span>
+<span id="cb2-96"><a href="#cb2-96" tabindex="-1"></a>            funs<span class="sc">$</span><span class="fu">f</span>(th, pars2<span class="sc">$</span>a[i], pars2<span class="sc">$</span>d[i], <span class="dv">1</span>)</span>
+<span id="cb2-97"><a href="#cb2-97" tabindex="-1"></a>        }</span>
+<span id="cb2-98"><a href="#cb2-98" tabindex="-1"></a>        qx <span class="ot">&lt;-</span> <span class="cf">function</span>(th) {</span>
+<span id="cb2-99"><a href="#cb2-99" tabindex="-1"></a>            funs<span class="sc">$</span><span class="fu">f</span>(th, x[<span class="dv">1</span>], x[<span class="dv">2</span>], <span class="dv">1</span>)</span>
+<span id="cb2-100"><a href="#cb2-100" tabindex="-1"></a>        }</span>
+<span id="cb2-101"><a href="#cb2-101" tabindex="-1"></a>        kl <span class="ot">&lt;-</span> <span class="cf">function</span>(th) {</span>
+<span id="cb2-102"><a href="#cb2-102" tabindex="-1"></a>            <span class="fu">px1</span>(th) <span class="sc">*</span> <span class="fu">log</span>(<span class="fu">qx</span>(th)) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">-</span> <span class="fu">px1</span>(th)) <span class="sc">*</span></span>
+<span id="cb2-103"><a href="#cb2-103" tabindex="-1"></a>                <span class="fu">log</span>(<span class="dv">1</span> <span class="sc">-</span> <span class="fu">qx</span>(th)) <span class="sc">+</span> <span class="fu">px2</span>(th) <span class="sc">*</span> <span class="fu">log</span>(<span class="fu">qx</span>(th)) <span class="sc">+</span></span>
+<span id="cb2-104"><a href="#cb2-104" tabindex="-1"></a>                (<span class="dv">1</span> <span class="sc">-</span> <span class="fu">px2</span>(th)) <span class="sc">*</span> <span class="fu">log</span>((<span class="dv">1</span> <span class="sc">-</span> <span class="fu">qx</span>(th)))</span>
+<span id="cb2-105"><a href="#cb2-105" tabindex="-1"></a>        }</span>
+<span id="cb2-106"><a href="#cb2-106" tabindex="-1"></a>        re <span class="ot">&lt;-</span> <span class="sc">-</span>spatstat.random<span class="sc">::</span><span class="fu">gauss.hermite</span>(kl, <span class="at">order =</span> <span class="dv">20</span>)</span>
+<span id="cb2-107"><a href="#cb2-107" tabindex="-1"></a>    }</span>
+<span id="cb2-108"><a href="#cb2-108" tabindex="-1"></a></span>
+<span id="cb2-109"><a href="#cb2-109" tabindex="-1"></a>    resmod <span class="ot">&lt;-</span> hyp<span class="sc">$</span>resmod</span>
+<span id="cb2-110"><a href="#cb2-110" tabindex="-1"></a>    unresmod <span class="ot">&lt;-</span> hyp<span class="sc">$</span>unresmod</span>
+<span id="cb2-111"><a href="#cb2-111" tabindex="-1"></a></span>
+<span id="cb2-112"><a href="#cb2-112" tabindex="-1"></a>    pars <span class="ot">&lt;-</span> unresmod<span class="sc">$</span>parsets</span>
+<span id="cb2-113"><a href="#cb2-113" tabindex="-1"></a></span>
+<span id="cb2-114"><a href="#cb2-114" tabindex="-1"></a>    pars1 <span class="ot">&lt;-</span> pars[[<span class="dv">1</span>]]</span>
+<span id="cb2-115"><a href="#cb2-115" tabindex="-1"></a>    pars2 <span class="ot">&lt;-</span> pars[[<span class="dv">2</span>]]</span>
+<span id="cb2-116"><a href="#cb2-116" tabindex="-1"></a></span>
+<span id="cb2-117"><a href="#cb2-117" tabindex="-1"></a>    funs <span class="ot">&lt;-</span> <span class="fu">load.functions</span>(pars1<span class="sc">$</span>itemtype)</span>
+<span id="cb2-118"><a href="#cb2-118" tabindex="-1"></a>    re <span class="ot">&lt;-</span> pars1</span>
+<span id="cb2-119"><a href="#cb2-119" tabindex="-1"></a></span>
+<span id="cb2-120"><a href="#cb2-120" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">length</span>(pars1<span class="sc">$</span>a))) {</span>
+<span id="cb2-121"><a href="#cb2-121" tabindex="-1"></a>        startval <span class="ot">&lt;-</span> <span class="fu">c</span>(re<span class="sc">$</span>a[i], re<span class="sc">$</span>d[i])</span>
+<span id="cb2-122"><a href="#cb2-122" tabindex="-1"></a>        optpar <span class="ot">&lt;-</span> stats<span class="sc">::</span><span class="fu">optim</span>(startval, <span class="cf">function</span>(x) {</span>
+<span id="cb2-123"><a href="#cb2-123" tabindex="-1"></a>            <span class="fu">maxl</span>(x, pars1, pars2, i)</span>
+<span id="cb2-124"><a href="#cb2-124" tabindex="-1"></a>        }, <span class="at">method =</span> <span class="st">&quot;BFGS&quot;</span>)</span>
+<span id="cb2-125"><a href="#cb2-125" tabindex="-1"></a>        re<span class="sc">$</span>a[i] <span class="ot">&lt;-</span> optpar<span class="sc">$</span>par[<span class="dv">1</span>]</span>
+<span id="cb2-126"><a href="#cb2-126" tabindex="-1"></a>        re<span class="sc">$</span>d[i] <span class="ot">&lt;-</span> optpar<span class="sc">$</span>par[<span class="dv">2</span>]</span>
+<span id="cb2-127"><a href="#cb2-127" tabindex="-1"></a>    }</span>
+<span id="cb2-128"><a href="#cb2-128" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
+<span id="cb2-129"><a href="#cb2-129" tabindex="-1"></a>})</span></code></pre></div>
 </div>
 <div id="h_pcmvsgpcm" class="section level2">
 <h2>h_PCMvsGPCM</h2>
 <p>We test the null hypothesis that the parameters adhere to the partial
 credit model against the alternative hypothesis that the parameters are
 better described by the generalized partial credit model.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>h_PCMvsGPCM <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">res =</span> <span class="cf">function</span>(altpars, <span class="at">nullpars =</span> <span class="cn">NULL</span>) {</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">1</span>]])</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    nkat <span class="ot">&lt;-</span> <span class="fu">ncol</span>(altpars<span class="sc">$</span>d)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">n.items =</span> n.items, <span class="at">itemtype =</span> <span class="st">&quot;gpcm&quot;</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">Amat =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fu">rep</span>(<span class="dv">0</span>, nkat <span class="sc">-</span> <span class="dv">1</span>), <span class="sc">-</span><span class="dv">1</span>, <span class="fu">rep</span>(<span class="dv">0</span>, nkat <span class="sc">-</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            <span class="dv">1</span>), <span class="fu">rep</span>(<span class="dv">0</span>, (n.items <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> nkat)) <span class="sc">|&gt;</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            (<span class="cf">function</span>(x) <span class="fu">rep</span>(x, n.items <span class="sc">-</span> <span class="dv">2</span>))() <span class="sc">|&gt;</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>            <span class="fu">c</span>(<span class="dv">1</span>, <span class="fu">rep</span>(<span class="dv">0</span>, nkat <span class="sc">-</span> <span class="dv">1</span>), <span class="sc">-</span><span class="dv">1</span>, <span class="fu">rep</span>(<span class="dv">0</span>, nkat <span class="sc">-</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                <span class="dv">1</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>            <span class="fu">matrix</span>(<span class="at">ncol =</span> n.items <span class="sc">*</span> nkat, <span class="at">byrow =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">cvec =</span> <span class="dv">0</span>, <span class="at">model =</span> mirt<span class="sc">::</span><span class="fu">mirt.model</span>(<span class="fu">paste</span>(<span class="st">&quot;F = 1-&quot;</span>,</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>            n.items, <span class="st">&quot;</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="st">                       CONSTRAIN = (1-&quot;</span>,</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>            n.items, <span class="st">&quot;, a1)&quot;</span>)))</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>}, <span class="at">unres =</span> <span class="cf">function</span>(altpars) {</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">parsets =</span> altpars, <span class="at">model =</span> <span class="dv">1</span>, <span class="at">itemtype =</span> <span class="st">&quot;gpcm&quot;</span>,</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">longpars =</span> <span class="fu">pars.long</span>(<span class="at">pars =</span> altpars, <span class="at">itemtype =</span> <span class="st">&quot;gpcm&quot;</span>))</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>}, <span class="at">maximizeL =</span> <span class="cf">function</span>(hyp) {</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Hypothesis-specific algorithm to find the</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># maximum likelihood restricted parameter set</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    maxlpreload <span class="ot">&lt;-</span> <span class="cf">function</span>(pars) {</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>        <span class="co"># returns the density for each response</span></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>        <span class="co"># pattern under the model parameters pars</span></span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>        n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(pars<span class="sc">$</span>a)</span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>        n.kat <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ncol</span>(pars<span class="sc">$</span>d), <span class="dv">2</span>)</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>        patterns <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">expand.grid</span>(<span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>n.items,</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>            <span class="cf">function</span>(x) <span class="dv">0</span><span class="sc">:</span>(n.kat <span class="sc">-</span> <span class="dv">1</span>))))</span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>        pre <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(patterns))) {</span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>            pre[i] <span class="ot">&lt;-</span> funs<span class="sc">$</span><span class="fu">g</span>(patterns[i, ], pars)</span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>(pre)</span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>    maxl <span class="ot">&lt;-</span> <span class="cf">function</span>(x, pars, pre) {</span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>        <span class="co"># calculates the likelihood of parameters</span></span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>        <span class="co"># x given model &#39;pars&#39;</span></span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>        n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(pars<span class="sc">$</span>a)</span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>        n.kat <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ncol</span>(pars<span class="sc">$</span>d), <span class="dv">2</span>)</span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>        patterns <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">expand.grid</span>(<span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>n.items,</span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>            <span class="cf">function</span>(x) <span class="dv">0</span><span class="sc">:</span>(n.kat <span class="sc">-</span> <span class="dv">1</span>))))</span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>        x <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="fu">rep</span>(x[<span class="dv">1</span>], n.items), <span class="at">d =</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>,</span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>            n.items), x[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(x)]), <span class="at">ncol =</span> <span class="fu">ncol</span>(pars<span class="sc">$</span>d)))</span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>        res <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
-<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(patterns))) {</span>
-<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>            px <span class="ot">&lt;-</span> pre[i]</span>
-<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>            qx <span class="ot">&lt;-</span> funs<span class="sc">$</span><span class="fu">g</span>(patterns[i, ], x)</span>
-<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>            res[i] <span class="ot">&lt;-</span> {</span>
-<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>                px <span class="sc">*</span> <span class="fu">log</span>(qx)</span>
-<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>            }</span>
-<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>        re <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">sum</span>(res)</span>
-<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>    resmod <span class="ot">&lt;-</span> hyp<span class="sc">$</span>resmod</span>
-<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>    unresmod <span class="ot">&lt;-</span> hyp<span class="sc">$</span>unresmod</span>
-<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>    pars <span class="ot">&lt;-</span> unresmod<span class="sc">$</span>parsets</span>
-<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>    funs <span class="ot">&lt;-</span> <span class="fu">load.functions</span>(unresmod<span class="sc">$</span>itemtype)</span>
-<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>    n.kat <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ncol</span>(pars<span class="sc">$</span>d), <span class="dv">2</span>)</span>
-<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(pars<span class="sc">$</span>a)</span>
-<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>    startval <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">mean</span>(pars<span class="sc">$</span>a), <span class="fu">as.numeric</span>(pars<span class="sc">$</span>d[,</span>
-<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>        <span class="dv">2</span><span class="sc">:</span>n.kat]))</span>
-<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>    maxlpre <span class="ot">&lt;-</span> <span class="fu">maxlpreload</span>(pars)</span>
-<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>    optpar <span class="ot">&lt;-</span> stats<span class="sc">::</span><span class="fu">optim</span>(startval, <span class="cf">function</span>(x) {</span>
-<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>        <span class="fu">maxl</span>(x, pars, maxlpre)</span>
-<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>    }, <span class="at">method =</span> <span class="st">&quot;BFGS&quot;</span>)</span>
-<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a>    re <span class="ot">&lt;-</span> pars</span>
-<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>    re<span class="sc">$</span>a <span class="ot">&lt;-</span> <span class="fu">rep</span>(optpar<span class="sc">$</span>par[<span class="dv">1</span>], n.items)</span>
-<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>    re<span class="sc">$</span>d <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, n.items), optpar<span class="sc">$</span>par[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(optpar<span class="sc">$</span>par)]),</span>
-<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>        <span class="at">ncol =</span> <span class="fu">ncol</span>(pars<span class="sc">$</span>d))</span>
-<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
-<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>h_PCMvsGPCM <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">res =</span> <span class="cf">function</span>(altpars, <span class="at">nullpars =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">1</span>]])</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>    nkat <span class="ot">&lt;-</span> <span class="fu">ncol</span>(altpars<span class="sc">$</span>d)</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">n.items =</span> n.items, <span class="at">itemtype =</span> <span class="st">&quot;gpcm&quot;</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>        <span class="at">Amat =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fu">rep</span>(<span class="dv">0</span>, nkat <span class="sc">-</span> <span class="dv">1</span>), <span class="sc">-</span><span class="dv">1</span>, <span class="fu">rep</span>(<span class="dv">0</span>, nkat <span class="sc">-</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>            <span class="dv">1</span>), <span class="fu">rep</span>(<span class="dv">0</span>, (n.items <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> nkat)) <span class="sc">|&gt;</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>            (<span class="cf">function</span>(x) <span class="fu">rep</span>(x, n.items <span class="sc">-</span> <span class="dv">2</span>))() <span class="sc">|&gt;</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>            <span class="fu">c</span>(<span class="dv">1</span>, <span class="fu">rep</span>(<span class="dv">0</span>, nkat <span class="sc">-</span> <span class="dv">1</span>), <span class="sc">-</span><span class="dv">1</span>, <span class="fu">rep</span>(<span class="dv">0</span>, nkat <span class="sc">-</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>                <span class="dv">1</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>            <span class="fu">matrix</span>(<span class="at">ncol =</span> n.items <span class="sc">*</span> nkat, <span class="at">byrow =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>        <span class="at">cvec =</span> <span class="dv">0</span>, <span class="at">model =</span> mirt<span class="sc">::</span><span class="fu">mirt.model</span>(<span class="fu">paste</span>(<span class="st">&quot;F = 1-&quot;</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>            n.items, <span class="st">&quot;</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="st">                       CONSTRAIN = (1-&quot;</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>            n.items, <span class="st">&quot;, a1)&quot;</span>)))</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>}, <span class="at">unres =</span> <span class="cf">function</span>(altpars) {</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">parsets =</span> altpars, <span class="at">model =</span> <span class="dv">1</span>, <span class="at">itemtype =</span> <span class="st">&quot;gpcm&quot;</span>,</span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>        <span class="at">longpars =</span> <span class="fu">pars.long</span>(<span class="at">pars =</span> altpars, <span class="at">itemtype =</span> <span class="st">&quot;gpcm&quot;</span>))</span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a>}, <span class="at">maximizeL =</span> <span class="cf">function</span>(hyp) {</span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a>    <span class="co"># Hypothesis-specific algorithm to find the</span></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a>    <span class="co"># maximum likelihood restricted parameter set</span></span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a>    maxlpreload <span class="ot">&lt;-</span> <span class="cf">function</span>(pars) {</span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a>        <span class="co"># returns the density for each response</span></span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a>        <span class="co"># pattern under the model parameters pars</span></span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a></span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a>        n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(pars<span class="sc">$</span>a)</span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a>        n.kat <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ncol</span>(pars<span class="sc">$</span>d), <span class="dv">2</span>)</span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a>        patterns <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">expand.grid</span>(<span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>n.items,</span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a>            <span class="cf">function</span>(x) <span class="dv">0</span><span class="sc">:</span>(n.kat <span class="sc">-</span> <span class="dv">1</span>))))</span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a></span>
+<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a>        pre <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(patterns))) {</span>
+<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a>            pre[i] <span class="ot">&lt;-</span> funs<span class="sc">$</span><span class="fu">g</span>(patterns[i, ], pars)</span>
+<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a>        }</span>
+<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a></span>
+<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a>        <span class="fu">return</span>(pre)</span>
+<span id="cb3-43"><a href="#cb3-43" tabindex="-1"></a>    }</span>
+<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a></span>
+<span id="cb3-45"><a href="#cb3-45" tabindex="-1"></a>    maxl <span class="ot">&lt;-</span> <span class="cf">function</span>(x, pars, pre) {</span>
+<span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a>        <span class="co"># calculates the likelihood of parameters</span></span>
+<span id="cb3-47"><a href="#cb3-47" tabindex="-1"></a>        <span class="co"># x given model &#39;pars&#39;</span></span>
+<span id="cb3-48"><a href="#cb3-48" tabindex="-1"></a>        n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(pars<span class="sc">$</span>a)</span>
+<span id="cb3-49"><a href="#cb3-49" tabindex="-1"></a>        n.kat <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ncol</span>(pars<span class="sc">$</span>d), <span class="dv">2</span>)</span>
+<span id="cb3-50"><a href="#cb3-50" tabindex="-1"></a>        patterns <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">expand.grid</span>(<span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>n.items,</span>
+<span id="cb3-51"><a href="#cb3-51" tabindex="-1"></a>            <span class="cf">function</span>(x) <span class="dv">0</span><span class="sc">:</span>(n.kat <span class="sc">-</span> <span class="dv">1</span>))))</span>
+<span id="cb3-52"><a href="#cb3-52" tabindex="-1"></a>        x <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="fu">rep</span>(x[<span class="dv">1</span>], n.items), <span class="at">d =</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>,</span>
+<span id="cb3-53"><a href="#cb3-53" tabindex="-1"></a>            n.items), x[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(x)]), <span class="at">ncol =</span> <span class="fu">ncol</span>(pars<span class="sc">$</span>d)))</span>
+<span id="cb3-54"><a href="#cb3-54" tabindex="-1"></a></span>
+<span id="cb3-55"><a href="#cb3-55" tabindex="-1"></a>        res <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb3-56"><a href="#cb3-56" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(patterns))) {</span>
+<span id="cb3-57"><a href="#cb3-57" tabindex="-1"></a>            px <span class="ot">&lt;-</span> pre[i]</span>
+<span id="cb3-58"><a href="#cb3-58" tabindex="-1"></a>            qx <span class="ot">&lt;-</span> funs<span class="sc">$</span><span class="fu">g</span>(patterns[i, ], x)</span>
+<span id="cb3-59"><a href="#cb3-59" tabindex="-1"></a>            res[i] <span class="ot">&lt;-</span> {</span>
+<span id="cb3-60"><a href="#cb3-60" tabindex="-1"></a>                px <span class="sc">*</span> <span class="fu">log</span>(qx)</span>
+<span id="cb3-61"><a href="#cb3-61" tabindex="-1"></a>            }</span>
+<span id="cb3-62"><a href="#cb3-62" tabindex="-1"></a>        }</span>
+<span id="cb3-63"><a href="#cb3-63" tabindex="-1"></a>        re <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">sum</span>(res)</span>
+<span id="cb3-64"><a href="#cb3-64" tabindex="-1"></a>    }</span>
+<span id="cb3-65"><a href="#cb3-65" tabindex="-1"></a></span>
+<span id="cb3-66"><a href="#cb3-66" tabindex="-1"></a>    resmod <span class="ot">&lt;-</span> hyp<span class="sc">$</span>resmod</span>
+<span id="cb3-67"><a href="#cb3-67" tabindex="-1"></a>    unresmod <span class="ot">&lt;-</span> hyp<span class="sc">$</span>unresmod</span>
+<span id="cb3-68"><a href="#cb3-68" tabindex="-1"></a></span>
+<span id="cb3-69"><a href="#cb3-69" tabindex="-1"></a>    pars <span class="ot">&lt;-</span> unresmod<span class="sc">$</span>parsets</span>
+<span id="cb3-70"><a href="#cb3-70" tabindex="-1"></a>    funs <span class="ot">&lt;-</span> <span class="fu">load.functions</span>(unresmod<span class="sc">$</span>itemtype)</span>
+<span id="cb3-71"><a href="#cb3-71" tabindex="-1"></a></span>
+<span id="cb3-72"><a href="#cb3-72" tabindex="-1"></a>    n.kat <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ncol</span>(pars<span class="sc">$</span>d), <span class="dv">2</span>)</span>
+<span id="cb3-73"><a href="#cb3-73" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(pars<span class="sc">$</span>a)</span>
+<span id="cb3-74"><a href="#cb3-74" tabindex="-1"></a>    startval <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">mean</span>(pars<span class="sc">$</span>a), <span class="fu">as.numeric</span>(pars<span class="sc">$</span>d[,</span>
+<span id="cb3-75"><a href="#cb3-75" tabindex="-1"></a>        <span class="dv">2</span><span class="sc">:</span>n.kat]))</span>
+<span id="cb3-76"><a href="#cb3-76" tabindex="-1"></a></span>
+<span id="cb3-77"><a href="#cb3-77" tabindex="-1"></a>    maxlpre <span class="ot">&lt;-</span> <span class="fu">maxlpreload</span>(pars)</span>
+<span id="cb3-78"><a href="#cb3-78" tabindex="-1"></a></span>
+<span id="cb3-79"><a href="#cb3-79" tabindex="-1"></a>    optpar <span class="ot">&lt;-</span> stats<span class="sc">::</span><span class="fu">optim</span>(startval, <span class="cf">function</span>(x) {</span>
+<span id="cb3-80"><a href="#cb3-80" tabindex="-1"></a>        <span class="fu">maxl</span>(x, pars, maxlpre)</span>
+<span id="cb3-81"><a href="#cb3-81" tabindex="-1"></a>    }, <span class="at">method =</span> <span class="st">&quot;BFGS&quot;</span>)</span>
+<span id="cb3-82"><a href="#cb3-82" tabindex="-1"></a>    re <span class="ot">&lt;-</span> pars</span>
+<span id="cb3-83"><a href="#cb3-83" tabindex="-1"></a>    re<span class="sc">$</span>a <span class="ot">&lt;-</span> <span class="fu">rep</span>(optpar<span class="sc">$</span>par[<span class="dv">1</span>], n.items)</span>
+<span id="cb3-84"><a href="#cb3-84" tabindex="-1"></a>    re<span class="sc">$</span>d <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, n.items), optpar<span class="sc">$</span>par[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(optpar<span class="sc">$</span>par)]),</span>
+<span id="cb3-85"><a href="#cb3-85" tabindex="-1"></a>        <span class="at">ncol =</span> <span class="fu">ncol</span>(pars<span class="sc">$</span>d))</span>
+<span id="cb3-86"><a href="#cb3-86" tabindex="-1"></a></span>
+<span id="cb3-87"><a href="#cb3-87" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
+<span id="cb3-88"><a href="#cb3-88" tabindex="-1"></a>})</span></code></pre></div>
 </div>
 <div id="h_2pl_basic" class="section level2">
 <h2>h_2PL_basic</h2>
 <p>The null hypothesis states that the first item has difficulty 0. The
 underlying model is the 2PL model.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>h_2PL_basic <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">res =</span> <span class="cf">function</span>(altpars, <span class="at">nullpars =</span> <span class="cn">NULL</span>) {</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">1</span>]])</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">n.items =</span> n.items, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>,</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">Amat =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fu">rep</span>(<span class="dv">0</span>, (n.items <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">2</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            (<span class="cf">function</span>(x) <span class="fu">matrix</span>(x, <span class="at">ncol =</span> n.items <span class="sc">*</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>                <span class="dv">2</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))(), <span class="at">cvec =</span> <span class="dv">0</span>, <span class="at">model =</span> mirt<span class="sc">::</span><span class="fu">mirt.model</span>(<span class="fu">paste</span>(<span class="st">&quot;F = 1-&quot;</span>,</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            n.items, <span class="st">&quot;</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="st">                           FIXED = (1, d)</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="st">                           START = (1,d,0)&quot;</span>)))</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>}, <span class="at">unres =</span> <span class="cf">function</span>(altpars) {</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">parsets =</span> altpars, <span class="at">model =</span> <span class="dv">1</span>, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>,</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">longpars =</span> <span class="fu">pars.long</span>(<span class="at">pars =</span> altpars, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>))</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>}, <span class="at">maximizeL =</span> <span class="cf">function</span>(hyp) {</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Hypothesis-specific algorithm to find the</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># maximum likelihood restricted parameter set</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    maxlpreload <span class="ot">&lt;-</span> <span class="cf">function</span>(pars) {</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>        <span class="co"># returns the density for each response</span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>        <span class="co"># pattern under the model parameters pars</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>        patterns <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">expand.grid</span>(<span class="fu">lapply</span>(<span class="fu">seq_len</span>(<span class="fu">length</span>(pars<span class="sc">$</span>a)),</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>            <span class="cf">function</span>(x) <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))))</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>        pre <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(patterns))) {</span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>            pre[i] <span class="ot">&lt;-</span> funs<span class="sc">$</span><span class="fu">g</span>(patterns[i, ], pars)</span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>(pre)</span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    maxl <span class="ot">&lt;-</span> <span class="cf">function</span>(x, pars, pre) {</span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>        <span class="co"># calculates the likelihood of parameters</span></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>        <span class="co"># x given model &#39;pars&#39;</span></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>        patterns <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">expand.grid</span>(<span class="fu">lapply</span>(<span class="fu">seq_len</span>(<span class="fu">length</span>(pars<span class="sc">$</span>a)),</span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>            <span class="cf">function</span>(x) <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))))</span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>        x <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="fu">c</span>(x, pars<span class="sc">$</span>a[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(pars<span class="sc">$</span>a)]),</span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>            <span class="at">d =</span> <span class="fu">c</span>(<span class="dv">0</span>, pars<span class="sc">$</span>d[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(pars<span class="sc">$</span>d)]))</span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>        res <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(patterns))) {</span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>            px <span class="ot">&lt;-</span> pre[i]</span>
-<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>            qx <span class="ot">&lt;-</span> funs<span class="sc">$</span><span class="fu">g</span>(patterns[i, ], x)</span>
-<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>            res[i] <span class="ot">&lt;-</span> {</span>
-<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>                px <span class="sc">*</span> <span class="fu">log</span>(qx)</span>
-<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>            }</span>
-<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>        re <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">sum</span>(res)</span>
-<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>    resmod <span class="ot">&lt;-</span> hyp<span class="sc">$</span>resmod</span>
-<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>    unresmod <span class="ot">&lt;-</span> hyp<span class="sc">$</span>unresmod</span>
-<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>    pars <span class="ot">&lt;-</span> unresmod<span class="sc">$</span>parsets</span>
-<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>    funs <span class="ot">&lt;-</span> <span class="fu">load.functions</span>(unresmod<span class="sc">$</span>itemtype)</span>
-<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>    startval <span class="ot">&lt;-</span> pars<span class="sc">$</span>a[<span class="dv">1</span>]</span>
-<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>    maxlpre <span class="ot">&lt;-</span> <span class="fu">maxlpreload</span>(pars)</span>
-<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>    optpar <span class="ot">&lt;-</span> stats<span class="sc">::</span><span class="fu">optim</span>(startval, <span class="cf">function</span>(x) {</span>
-<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>        <span class="fu">maxl</span>(x, pars, maxlpre)</span>
-<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>    }, <span class="at">method =</span> <span class="st">&quot;BFGS&quot;</span>)</span>
-<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>    re <span class="ot">&lt;-</span> pars</span>
-<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>    re<span class="sc">$</span>a <span class="ot">&lt;-</span> <span class="fu">c</span>(optpar<span class="sc">$</span>par[<span class="dv">1</span>], pars<span class="sc">$</span>a[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(pars<span class="sc">$</span>a)])</span>
-<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>    re<span class="sc">$</span>d <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, pars<span class="sc">$</span>d[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(pars<span class="sc">$</span>d)])</span>
-<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
-<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>h_2PL_basic <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">res =</span> <span class="cf">function</span>(altpars, <span class="at">nullpars =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">1</span>]])</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">n.items =</span> n.items, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>        <span class="at">Amat =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fu">rep</span>(<span class="dv">0</span>, (n.items <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">2</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>            (<span class="cf">function</span>(x) <span class="fu">matrix</span>(x, <span class="at">ncol =</span> n.items <span class="sc">*</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>                <span class="dv">2</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))(), <span class="at">cvec =</span> <span class="dv">0</span>, <span class="at">model =</span> mirt<span class="sc">::</span><span class="fu">mirt.model</span>(<span class="fu">paste</span>(<span class="st">&quot;F = 1-&quot;</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>            n.items, <span class="st">&quot;</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="st">                           FIXED = (1, d)</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="st">                           START = (1,d,0)&quot;</span>)))</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>}, <span class="at">unres =</span> <span class="cf">function</span>(altpars) {</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">parsets =</span> altpars, <span class="at">model =</span> <span class="dv">1</span>, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>,</span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>        <span class="at">longpars =</span> <span class="fu">pars.long</span>(<span class="at">pars =</span> altpars, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>))</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>}, <span class="at">maximizeL =</span> <span class="cf">function</span>(hyp) {</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>    <span class="co"># Hypothesis-specific algorithm to find the</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>    <span class="co"># maximum likelihood restricted parameter set</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>    maxlpreload <span class="ot">&lt;-</span> <span class="cf">function</span>(pars) {</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>        <span class="co"># returns the density for each response</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>        <span class="co"># pattern under the model parameters pars</span></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>        patterns <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">expand.grid</span>(<span class="fu">lapply</span>(<span class="fu">seq_len</span>(<span class="fu">length</span>(pars<span class="sc">$</span>a)),</span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>            <span class="cf">function</span>(x) <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))))</span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a>        pre <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(patterns))) {</span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a>            pre[i] <span class="ot">&lt;-</span> funs<span class="sc">$</span><span class="fu">g</span>(patterns[i, ], pars)</span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a>        }</span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a></span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a>        <span class="fu">return</span>(pre)</span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a>    }</span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a></span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a>    maxl <span class="ot">&lt;-</span> <span class="cf">function</span>(x, pars, pre) {</span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a>        <span class="co"># calculates the likelihood of parameters</span></span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a>        <span class="co"># x given model &#39;pars&#39;</span></span>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a>        patterns <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">expand.grid</span>(<span class="fu">lapply</span>(<span class="fu">seq_len</span>(<span class="fu">length</span>(pars<span class="sc">$</span>a)),</span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a>            <span class="cf">function</span>(x) <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))))</span>
+<span id="cb4-43"><a href="#cb4-43" tabindex="-1"></a></span>
+<span id="cb4-44"><a href="#cb4-44" tabindex="-1"></a>        x <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="fu">c</span>(x, pars<span class="sc">$</span>a[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(pars<span class="sc">$</span>a)]),</span>
+<span id="cb4-45"><a href="#cb4-45" tabindex="-1"></a>            <span class="at">d =</span> <span class="fu">c</span>(<span class="dv">0</span>, pars<span class="sc">$</span>d[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(pars<span class="sc">$</span>d)]))</span>
+<span id="cb4-46"><a href="#cb4-46" tabindex="-1"></a></span>
+<span id="cb4-47"><a href="#cb4-47" tabindex="-1"></a>        res <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb4-48"><a href="#cb4-48" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(patterns))) {</span>
+<span id="cb4-49"><a href="#cb4-49" tabindex="-1"></a>            px <span class="ot">&lt;-</span> pre[i]</span>
+<span id="cb4-50"><a href="#cb4-50" tabindex="-1"></a>            qx <span class="ot">&lt;-</span> funs<span class="sc">$</span><span class="fu">g</span>(patterns[i, ], x)</span>
+<span id="cb4-51"><a href="#cb4-51" tabindex="-1"></a>            res[i] <span class="ot">&lt;-</span> {</span>
+<span id="cb4-52"><a href="#cb4-52" tabindex="-1"></a>                px <span class="sc">*</span> <span class="fu">log</span>(qx)</span>
+<span id="cb4-53"><a href="#cb4-53" tabindex="-1"></a>            }</span>
+<span id="cb4-54"><a href="#cb4-54" tabindex="-1"></a>        }</span>
+<span id="cb4-55"><a href="#cb4-55" tabindex="-1"></a>        re <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">sum</span>(res)</span>
+<span id="cb4-56"><a href="#cb4-56" tabindex="-1"></a>    }</span>
+<span id="cb4-57"><a href="#cb4-57" tabindex="-1"></a>    resmod <span class="ot">&lt;-</span> hyp<span class="sc">$</span>resmod</span>
+<span id="cb4-58"><a href="#cb4-58" tabindex="-1"></a>    unresmod <span class="ot">&lt;-</span> hyp<span class="sc">$</span>unresmod</span>
+<span id="cb4-59"><a href="#cb4-59" tabindex="-1"></a></span>
+<span id="cb4-60"><a href="#cb4-60" tabindex="-1"></a>    pars <span class="ot">&lt;-</span> unresmod<span class="sc">$</span>parsets</span>
+<span id="cb4-61"><a href="#cb4-61" tabindex="-1"></a>    funs <span class="ot">&lt;-</span> <span class="fu">load.functions</span>(unresmod<span class="sc">$</span>itemtype)</span>
+<span id="cb4-62"><a href="#cb4-62" tabindex="-1"></a></span>
+<span id="cb4-63"><a href="#cb4-63" tabindex="-1"></a>    startval <span class="ot">&lt;-</span> pars<span class="sc">$</span>a[<span class="dv">1</span>]</span>
+<span id="cb4-64"><a href="#cb4-64" tabindex="-1"></a></span>
+<span id="cb4-65"><a href="#cb4-65" tabindex="-1"></a>    maxlpre <span class="ot">&lt;-</span> <span class="fu">maxlpreload</span>(pars)</span>
+<span id="cb4-66"><a href="#cb4-66" tabindex="-1"></a></span>
+<span id="cb4-67"><a href="#cb4-67" tabindex="-1"></a>    optpar <span class="ot">&lt;-</span> stats<span class="sc">::</span><span class="fu">optim</span>(startval, <span class="cf">function</span>(x) {</span>
+<span id="cb4-68"><a href="#cb4-68" tabindex="-1"></a>        <span class="fu">maxl</span>(x, pars, maxlpre)</span>
+<span id="cb4-69"><a href="#cb4-69" tabindex="-1"></a>    }, <span class="at">method =</span> <span class="st">&quot;BFGS&quot;</span>)</span>
+<span id="cb4-70"><a href="#cb4-70" tabindex="-1"></a>    re <span class="ot">&lt;-</span> pars</span>
+<span id="cb4-71"><a href="#cb4-71" tabindex="-1"></a>    re<span class="sc">$</span>a <span class="ot">&lt;-</span> <span class="fu">c</span>(optpar<span class="sc">$</span>par[<span class="dv">1</span>], pars<span class="sc">$</span>a[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(pars<span class="sc">$</span>a)])</span>
+<span id="cb4-72"><a href="#cb4-72" tabindex="-1"></a>    re<span class="sc">$</span>d <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, pars<span class="sc">$</span>d[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(pars<span class="sc">$</span>d)])</span>
+<span id="cb4-73"><a href="#cb4-73" tabindex="-1"></a></span>
+<span id="cb4-74"><a href="#cb4-74" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
+<span id="cb4-75"><a href="#cb4-75" tabindex="-1"></a>})</span></code></pre></div>
 </div>
 <div id="h_3pl_basic" class="section level2">
 <h2>h_3PL_basic</h2>
 <p>We test the null hypothesis that the first item parameters are
 (1,0,.2) for the a,d, and g parameters respectively. The underlying
 model is the 3PL model.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>h_3PL_basic <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">res =</span> <span class="cf">function</span>(altpars, <span class="at">nullpars =</span> <span class="cn">NULL</span>) {</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">2</span>]])</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">n.items =</span> n.items, <span class="at">itemtype =</span> <span class="st">&quot;3PL&quot;</span>,</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">Amat =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="fu">rep</span>(<span class="dv">0</span>, (n.items <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">3</span>),</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="fu">rep</span>(<span class="dv">0</span>, (n.items <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">3</span>), <span class="dv">0</span>,</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            <span class="dv">0</span>, <span class="dv">1</span>, <span class="fu">rep</span>(<span class="dv">0</span>, (n.items <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">3</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            <span class="fu">matrix</span>(<span class="at">ncol =</span> n.items <span class="sc">*</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">cvec =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="fl">0.2</span>), <span class="at">model =</span> mirt<span class="sc">::</span><span class="fu">mirt.model</span>(<span class="fu">paste</span>(<span class="st">&quot;F = 1-&quot;</span>,</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            n.items, <span class="st">&quot;</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="st">                           FIXED = (1, d), (1,a1), (1,g)</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="st">                           START = (1,d,0),(1,a1,1),(1,g,.2)&quot;</span>)))</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>}, <span class="at">unres =</span> <span class="cf">function</span>(altpars) {</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">2</span>]])</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">parsets =</span> altpars, <span class="at">model =</span> <span class="dv">1</span>, <span class="at">itemtype =</span> <span class="st">&quot;3PL&quot;</span>,</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">longpars =</span> <span class="fu">pars.long</span>(<span class="at">pars =</span> altpars, <span class="at">itemtype =</span> <span class="st">&quot;3PL&quot;</span>))</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>}, <span class="at">maximizeL =</span> <span class="cf">function</span>(hyp) {</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Hypothesis-specific algorithm to find the</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># maximum likelihood restricted parameter set</span></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    maxlpreload <span class="ot">&lt;-</span> <span class="cf">function</span>(pars) {</span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>        <span class="co"># returns the density for each response</span></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>        <span class="co"># pattern under the model parameters pars</span></span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>        patterns <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">expand.grid</span>(<span class="fu">lapply</span>(<span class="fu">seq_len</span>(<span class="fu">length</span>(pars<span class="sc">$</span>a)),</span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>            <span class="cf">function</span>(x) <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))))</span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>        pre <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(patterns))) {</span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>            pre[i] <span class="ot">&lt;-</span> funs<span class="sc">$</span><span class="fu">g</span>(patterns[i, ], pars)</span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>(pre)</span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>    maxl <span class="ot">&lt;-</span> <span class="cf">function</span>(x, pars, pre) {</span>
-<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>        <span class="co"># calculates the likelihood of parameters</span></span>
-<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>        <span class="co"># x given model &#39;pars&#39;</span></span>
-<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>        patterns <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">expand.grid</span>(<span class="fu">lapply</span>(<span class="fu">seq_len</span>(<span class="fu">length</span>(pars<span class="sc">$</span>a)),</span>
-<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>            <span class="cf">function</span>(x) <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))))</span>
-<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>        x <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="fu">c</span>(x, pars<span class="sc">$</span>a[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(pars<span class="sc">$</span>a)]),</span>
-<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>            <span class="at">d =</span> <span class="fu">c</span>(<span class="dv">0</span>, pars<span class="sc">$</span>d[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(pars<span class="sc">$</span>d)]))</span>
-<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>        res <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
-<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(patterns))) {</span>
-<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>            px <span class="ot">&lt;-</span> pre[i]</span>
-<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>            qx <span class="ot">&lt;-</span> funs<span class="sc">$</span><span class="fu">g</span>(patterns[i, ], x)</span>
-<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>            res[i] <span class="ot">&lt;-</span> {</span>
-<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>                px <span class="sc">*</span> <span class="fu">log</span>(qx)</span>
-<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>            }</span>
-<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>        re <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">sum</span>(res)</span>
-<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>    resmod <span class="ot">&lt;-</span> hyp<span class="sc">$</span>resmod</span>
-<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>    unresmod <span class="ot">&lt;-</span> hyp<span class="sc">$</span>unresmod</span>
-<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>    pars <span class="ot">&lt;-</span> unresmod<span class="sc">$</span>parsets</span>
-<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a>    funs <span class="ot">&lt;-</span> <span class="fu">load.functions</span>(unresmod<span class="sc">$</span>itemtype)</span>
-<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a>    startval <span class="ot">&lt;-</span> pars<span class="sc">$</span>a[<span class="dv">1</span>]</span>
-<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a>    maxlpre <span class="ot">&lt;-</span> <span class="fu">maxlpreload</span>(pars)</span>
-<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a>    optpar <span class="ot">&lt;-</span> stats<span class="sc">::</span><span class="fu">optim</span>(startval, <span class="cf">function</span>(x) {</span>
-<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a>        <span class="fu">maxl</span>(x, pars, maxlpre)</span>
-<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a>    }, <span class="at">method =</span> <span class="st">&quot;BFGS&quot;</span>)</span>
-<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a>    re <span class="ot">&lt;-</span> pars</span>
-<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a>    re<span class="sc">$</span>a <span class="ot">&lt;-</span> <span class="fu">c</span>(optpar<span class="sc">$</span>par[<span class="dv">1</span>], pars<span class="sc">$</span>a[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(pars<span class="sc">$</span>a)])</span>
-<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a>    re<span class="sc">$</span>d <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, pars<span class="sc">$</span>d[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(pars<span class="sc">$</span>d)])</span>
-<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-76"><a href="#cb5-76" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
-<span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>h_3PL_basic <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">res =</span> <span class="cf">function</span>(altpars, <span class="at">nullpars =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">2</span>]])</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">n.items =</span> n.items, <span class="at">itemtype =</span> <span class="st">&quot;3PL&quot;</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>        <span class="at">Amat =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="fu">rep</span>(<span class="dv">0</span>, (n.items <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">3</span>),</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>            <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="fu">rep</span>(<span class="dv">0</span>, (n.items <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">3</span>), <span class="dv">0</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>            <span class="dv">0</span>, <span class="dv">1</span>, <span class="fu">rep</span>(<span class="dv">0</span>, (n.items <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">3</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>            <span class="fu">matrix</span>(<span class="at">ncol =</span> n.items <span class="sc">*</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>        <span class="at">cvec =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="fl">0.2</span>), <span class="at">model =</span> mirt<span class="sc">::</span><span class="fu">mirt.model</span>(<span class="fu">paste</span>(<span class="st">&quot;F = 1-&quot;</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>            n.items, <span class="st">&quot;</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="st">                           FIXED = (1, d), (1,a1), (1,g)</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="st">                           START = (1,d,0),(1,a1,1),(1,g,.2)&quot;</span>)))</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>}, <span class="at">unres =</span> <span class="cf">function</span>(altpars) {</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">2</span>]])</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">parsets =</span> altpars, <span class="at">model =</span> <span class="dv">1</span>, <span class="at">itemtype =</span> <span class="st">&quot;3PL&quot;</span>,</span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>        <span class="at">longpars =</span> <span class="fu">pars.long</span>(<span class="at">pars =</span> altpars, <span class="at">itemtype =</span> <span class="st">&quot;3PL&quot;</span>))</span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>}, <span class="at">maximizeL =</span> <span class="cf">function</span>(hyp) {</span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>    <span class="co"># Hypothesis-specific algorithm to find the</span></span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>    <span class="co"># maximum likelihood restricted parameter set</span></span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a>    maxlpreload <span class="ot">&lt;-</span> <span class="cf">function</span>(pars) {</span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a>        <span class="co"># returns the density for each response</span></span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a>        <span class="co"># pattern under the model parameters pars</span></span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a>        patterns <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">expand.grid</span>(<span class="fu">lapply</span>(<span class="fu">seq_len</span>(<span class="fu">length</span>(pars<span class="sc">$</span>a)),</span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a>            <span class="cf">function</span>(x) <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))))</span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a></span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a>        pre <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(patterns))) {</span>
+<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a>            pre[i] <span class="ot">&lt;-</span> funs<span class="sc">$</span><span class="fu">g</span>(patterns[i, ], pars)</span>
+<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a>        }</span>
+<span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a></span>
+<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a>        <span class="fu">return</span>(pre)</span>
+<span id="cb5-38"><a href="#cb5-38" tabindex="-1"></a>    }</span>
+<span id="cb5-39"><a href="#cb5-39" tabindex="-1"></a></span>
+<span id="cb5-40"><a href="#cb5-40" tabindex="-1"></a>    maxl <span class="ot">&lt;-</span> <span class="cf">function</span>(x, pars, pre) {</span>
+<span id="cb5-41"><a href="#cb5-41" tabindex="-1"></a>        <span class="co"># calculates the likelihood of parameters</span></span>
+<span id="cb5-42"><a href="#cb5-42" tabindex="-1"></a>        <span class="co"># x given model &#39;pars&#39;</span></span>
+<span id="cb5-43"><a href="#cb5-43" tabindex="-1"></a>        patterns <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">expand.grid</span>(<span class="fu">lapply</span>(<span class="fu">seq_len</span>(<span class="fu">length</span>(pars<span class="sc">$</span>a)),</span>
+<span id="cb5-44"><a href="#cb5-44" tabindex="-1"></a>            <span class="cf">function</span>(x) <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))))</span>
+<span id="cb5-45"><a href="#cb5-45" tabindex="-1"></a></span>
+<span id="cb5-46"><a href="#cb5-46" tabindex="-1"></a>        x <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="fu">c</span>(x, pars<span class="sc">$</span>a[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(pars<span class="sc">$</span>a)]),</span>
+<span id="cb5-47"><a href="#cb5-47" tabindex="-1"></a>            <span class="at">d =</span> <span class="fu">c</span>(<span class="dv">0</span>, pars<span class="sc">$</span>d[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(pars<span class="sc">$</span>d)]))</span>
+<span id="cb5-48"><a href="#cb5-48" tabindex="-1"></a></span>
+<span id="cb5-49"><a href="#cb5-49" tabindex="-1"></a>        res <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb5-50"><a href="#cb5-50" tabindex="-1"></a>        <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(patterns))) {</span>
+<span id="cb5-51"><a href="#cb5-51" tabindex="-1"></a>            px <span class="ot">&lt;-</span> pre[i]</span>
+<span id="cb5-52"><a href="#cb5-52" tabindex="-1"></a>            qx <span class="ot">&lt;-</span> funs<span class="sc">$</span><span class="fu">g</span>(patterns[i, ], x)</span>
+<span id="cb5-53"><a href="#cb5-53" tabindex="-1"></a>            res[i] <span class="ot">&lt;-</span> {</span>
+<span id="cb5-54"><a href="#cb5-54" tabindex="-1"></a>                px <span class="sc">*</span> <span class="fu">log</span>(qx)</span>
+<span id="cb5-55"><a href="#cb5-55" tabindex="-1"></a>            }</span>
+<span id="cb5-56"><a href="#cb5-56" tabindex="-1"></a>        }</span>
+<span id="cb5-57"><a href="#cb5-57" tabindex="-1"></a>        re <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">sum</span>(res)</span>
+<span id="cb5-58"><a href="#cb5-58" tabindex="-1"></a>    }</span>
+<span id="cb5-59"><a href="#cb5-59" tabindex="-1"></a>    resmod <span class="ot">&lt;-</span> hyp<span class="sc">$</span>resmod</span>
+<span id="cb5-60"><a href="#cb5-60" tabindex="-1"></a>    unresmod <span class="ot">&lt;-</span> hyp<span class="sc">$</span>unresmod</span>
+<span id="cb5-61"><a href="#cb5-61" tabindex="-1"></a></span>
+<span id="cb5-62"><a href="#cb5-62" tabindex="-1"></a>    pars <span class="ot">&lt;-</span> unresmod<span class="sc">$</span>parsets</span>
+<span id="cb5-63"><a href="#cb5-63" tabindex="-1"></a>    funs <span class="ot">&lt;-</span> <span class="fu">load.functions</span>(unresmod<span class="sc">$</span>itemtype)</span>
+<span id="cb5-64"><a href="#cb5-64" tabindex="-1"></a></span>
+<span id="cb5-65"><a href="#cb5-65" tabindex="-1"></a>    startval <span class="ot">&lt;-</span> pars<span class="sc">$</span>a[<span class="dv">1</span>]</span>
+<span id="cb5-66"><a href="#cb5-66" tabindex="-1"></a></span>
+<span id="cb5-67"><a href="#cb5-67" tabindex="-1"></a>    maxlpre <span class="ot">&lt;-</span> <span class="fu">maxlpreload</span>(pars)</span>
+<span id="cb5-68"><a href="#cb5-68" tabindex="-1"></a></span>
+<span id="cb5-69"><a href="#cb5-69" tabindex="-1"></a>    optpar <span class="ot">&lt;-</span> stats<span class="sc">::</span><span class="fu">optim</span>(startval, <span class="cf">function</span>(x) {</span>
+<span id="cb5-70"><a href="#cb5-70" tabindex="-1"></a>        <span class="fu">maxl</span>(x, pars, maxlpre)</span>
+<span id="cb5-71"><a href="#cb5-71" tabindex="-1"></a>    }, <span class="at">method =</span> <span class="st">&quot;BFGS&quot;</span>)</span>
+<span id="cb5-72"><a href="#cb5-72" tabindex="-1"></a>    re <span class="ot">&lt;-</span> pars</span>
+<span id="cb5-73"><a href="#cb5-73" tabindex="-1"></a>    re<span class="sc">$</span>a <span class="ot">&lt;-</span> <span class="fu">c</span>(optpar<span class="sc">$</span>par[<span class="dv">1</span>], pars<span class="sc">$</span>a[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(pars<span class="sc">$</span>a)])</span>
+<span id="cb5-74"><a href="#cb5-74" tabindex="-1"></a>    re<span class="sc">$</span>d <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, pars<span class="sc">$</span>d[<span class="dv">2</span><span class="sc">:</span><span class="fu">length</span>(pars<span class="sc">$</span>d)])</span>
+<span id="cb5-75"><a href="#cb5-75" tabindex="-1"></a></span>
+<span id="cb5-76"><a href="#cb5-76" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
+<span id="cb5-77"><a href="#cb5-77" tabindex="-1"></a>})</span></code></pre></div>
 </div>
 <div id="h_multi_basic" class="section level2">
 <h2>h_multi_basic</h2>
 <p>We test the null hypothesis that the difficulty of the first two item
 parameters is equal. The underlying model is the two-dimensional 2PL
 model. Only the sampling-based approach is available for now.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>h_multi_basic <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">res =</span> <span class="cf">function</span>(altpars, <span class="at">nullpars =</span> <span class="cn">NULL</span>) {</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">2</span>]])</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">n.items =</span> n.items, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>,</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">Amat =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="fu">rep</span>(<span class="dv">0</span>, (n.items <span class="sc">-</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>            <span class="dv">3</span>) <span class="sc">*</span> <span class="dv">3</span> <span class="sc">+</span> <span class="dv">2</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>            <span class="fu">matrix</span>(<span class="at">ncol =</span> n.items <span class="sc">*</span> <span class="dv">3</span> <span class="sc">-</span> <span class="dv">1</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">cvec =</span> <span class="dv">0</span>, <span class="at">model =</span> mirt<span class="sc">::</span><span class="fu">mirt.model</span>(<span class="fu">paste</span>(<span class="st">&quot;F1 = 1-&quot;</span>,</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>            n.items, <span class="st">&quot;</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="st">                           F2 = 1-&quot;</span>,</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>            n.items <span class="sc">-</span> <span class="dv">1</span>, <span class="st">&quot;</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="st">                           CONSTRAIN = (1-2, d&quot;</span>)))</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>}, <span class="at">unres =</span> <span class="cf">function</span>(altpars) {</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">2</span>]])</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">parsets =</span> altpars, <span class="at">model =</span> mirt<span class="sc">::</span><span class="fu">mirt.model</span>(<span class="fu">paste</span>(<span class="st">&quot;F1 = 1-&quot;</span>,</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        n.items, <span class="st">&quot;</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="st">                           F2 = 1-&quot;</span>,</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>        n.items <span class="sc">-</span> <span class="dv">1</span>, <span class="st">&quot;&quot;</span>)), <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>, <span class="at">longpars =</span> <span class="fu">pars.long</span>(<span class="at">pars =</span> altpars,</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>))</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>}, <span class="at">maximizeL =</span> <span class="cf">function</span>(hyp) {</span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Hypothesis-specific algorithm to find the</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># maximum likelihood restricted parameter set</span></span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># not written yet, only sampling-based</span></span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># available for now</span></span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>h_multi_basic <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">res =</span> <span class="cf">function</span>(altpars, <span class="at">nullpars =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">2</span>]])</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">n.items =</span> n.items, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>        <span class="at">Amat =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="fu">rep</span>(<span class="dv">0</span>, (n.items <span class="sc">-</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>            <span class="dv">3</span>) <span class="sc">*</span> <span class="dv">3</span> <span class="sc">+</span> <span class="dv">2</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>            <span class="fu">matrix</span>(<span class="at">ncol =</span> n.items <span class="sc">*</span> <span class="dv">3</span> <span class="sc">-</span> <span class="dv">1</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>        <span class="at">cvec =</span> <span class="dv">0</span>, <span class="at">model =</span> mirt<span class="sc">::</span><span class="fu">mirt.model</span>(<span class="fu">paste</span>(<span class="st">&quot;F1 = 1-&quot;</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>            n.items, <span class="st">&quot;</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="st">                           F2 = 1-&quot;</span>,</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>            n.items <span class="sc">-</span> <span class="dv">1</span>, <span class="st">&quot;</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="st">                           CONSTRAIN = (1-2, d&quot;</span>)))</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>}, <span class="at">unres =</span> <span class="cf">function</span>(altpars) {</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">2</span>]])</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">parsets =</span> altpars, <span class="at">model =</span> mirt<span class="sc">::</span><span class="fu">mirt.model</span>(<span class="fu">paste</span>(<span class="st">&quot;F1 = 1-&quot;</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>        n.items, <span class="st">&quot;</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="st">                           F2 = 1-&quot;</span>,</span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>        n.items <span class="sc">-</span> <span class="dv">1</span>, <span class="st">&quot;&quot;</span>)), <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>, <span class="at">longpars =</span> <span class="fu">pars.long</span>(<span class="at">pars =</span> altpars,</span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>        <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>))</span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>}, <span class="at">maximizeL =</span> <span class="cf">function</span>(hyp) {</span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>    <span class="co"># Hypothesis-specific algorithm to find the</span></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a>    <span class="co"># maximum likelihood restricted parameter set</span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a></span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>    <span class="co"># not written yet, only sampling-based</span></span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>    <span class="co"># available for now</span></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>})</span></code></pre></div>
 </div>
 <div id="h_multi_basic2" class="section level2">
 <h2>h_multi_basic2</h2>
 <p>We test the null hypothesis that the difficulty of the first item is
 equal to 2. The underlying model is the two-dimensional 2PL model. Only
 the sampling-based approach is available for now.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>h_multi_basic2 <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">res =</span> <span class="cf">function</span>(altpars, <span class="at">nullpars =</span> <span class="cn">NULL</span>) {</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">2</span>]])</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">n.items =</span> n.items, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">Amat =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="fu">rep</span>(<span class="dv">0</span>, (n.items <span class="sc">-</span> <span class="dv">2</span>) <span class="sc">*</span> <span class="dv">3</span> <span class="sc">+</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>            <span class="dv">2</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>            <span class="fu">matrix</span>(<span class="at">ncol =</span> n.items <span class="sc">*</span> <span class="dv">3</span> <span class="sc">-</span> <span class="dv">1</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">cvec =</span> <span class="dv">2</span>, <span class="at">model =</span> mirt<span class="sc">::</span><span class="fu">mirt.model</span>(<span class="fu">paste</span>(<span class="st">&quot;F1 = 1-&quot;</span>,</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>            n.items, <span class="st">&quot;</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="st">                           F2 = 1-&quot;</span>,</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>            n.items <span class="sc">-</span> <span class="dv">1</span>, <span class="st">&quot;</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="st">                           FIXED = (1, d)</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="st">                           START = (1,d,2)&quot;</span>)))</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>}, <span class="at">unres =</span> <span class="cf">function</span>(altpars) {</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">2</span>]])</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">parsets =</span> altpars, <span class="at">model =</span> mirt<span class="sc">::</span><span class="fu">mirt.model</span>(<span class="fu">paste</span>(<span class="st">&quot;F1 = 1-&quot;</span>,</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        n.items, <span class="st">&quot;</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="st">                           F2 = 1-&quot;</span>,</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>        n.items <span class="sc">-</span> <span class="dv">1</span>, <span class="st">&quot;&quot;</span>)), <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>, <span class="at">longpars =</span> <span class="fu">pars.long</span>(<span class="at">pars =</span> altpars,</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>))</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>}, <span class="at">maximizeL =</span> <span class="cf">function</span>(hyp) {</span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Hypothesis-specific algorithm to find the</span></span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># maximum likelihood restricted parameter set</span></span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># not written yet, only sampling-based</span></span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># available for now</span></span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>h_multi_basic2 <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">res =</span> <span class="cf">function</span>(altpars, <span class="at">nullpars =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">2</span>]])</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">n.items =</span> n.items, <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>        <span class="at">Amat =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="fu">rep</span>(<span class="dv">0</span>, (n.items <span class="sc">-</span> <span class="dv">2</span>) <span class="sc">*</span> <span class="dv">3</span> <span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>            <span class="dv">2</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>            <span class="fu">matrix</span>(<span class="at">ncol =</span> n.items <span class="sc">*</span> <span class="dv">3</span> <span class="sc">-</span> <span class="dv">1</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>        <span class="at">cvec =</span> <span class="dv">2</span>, <span class="at">model =</span> mirt<span class="sc">::</span><span class="fu">mirt.model</span>(<span class="fu">paste</span>(<span class="st">&quot;F1 = 1-&quot;</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>            n.items, <span class="st">&quot;</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="st">                           F2 = 1-&quot;</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>            n.items <span class="sc">-</span> <span class="dv">1</span>, <span class="st">&quot;</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="st">                           FIXED = (1, d)</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="st">                           START = (1,d,2)&quot;</span>)))</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>}, <span class="at">unres =</span> <span class="cf">function</span>(altpars) {</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    n.items <span class="ot">&lt;-</span> <span class="fu">length</span>(altpars[[<span class="dv">2</span>]])</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>    re <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">parsets =</span> altpars, <span class="at">model =</span> mirt<span class="sc">::</span><span class="fu">mirt.model</span>(<span class="fu">paste</span>(<span class="st">&quot;F1 = 1-&quot;</span>,</span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>        n.items, <span class="st">&quot;</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a><span class="st">                           F2 = 1-&quot;</span>,</span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>        n.items <span class="sc">-</span> <span class="dv">1</span>, <span class="st">&quot;&quot;</span>)), <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>, <span class="at">longpars =</span> <span class="fu">pars.long</span>(<span class="at">pars =</span> altpars,</span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>        <span class="at">itemtype =</span> <span class="st">&quot;2PL&quot;</span>))</span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a></span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>    <span class="fu">return</span>(re)</span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>}, <span class="at">maximizeL =</span> <span class="cf">function</span>(hyp) {</span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>    <span class="co"># Hypothesis-specific algorithm to find the</span></span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a>    <span class="co"># maximum likelihood restricted parameter set</span></span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a></span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a>    <span class="co"># not written yet, only sampling-based</span></span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a>    <span class="co"># available for now</span></span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a>})</span></code></pre></div>
 </div>
 
 

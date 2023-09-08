@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Jan Radek" />
+
+
+<title>Power Analysis for the Wald, LR, Score, and Gradient Tests using irtpwr</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Power Analysis for the Wald, LR, Score, and
+Gradient Tests using irtpwr</h1>
+<h4 class="author">Jan Radek</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction" id="toc-introduction">1.
+Introduction</a></li>
+<li><a href="#general-workflow-for-irtpwr" id="toc-general-workflow-for-irtpwr">2. General workflow for
+irtpwr</a></li>
+<li><a href="#rasch-against-2pl-model" id="toc-rasch-against-2pl-model">3. Rasch against 2PL model</a>
+<ul>
+<li><a href="#a-priori-power-analysis" id="toc-a-priori-power-analysis">3.1. A priori power analysis</a></li>
+<li><a href="#a-posteriori-power-analysis" id="toc-a-posteriori-power-analysis">3.2. A posteriori power
+analysis</a></li>
+</ul></li>
+<li><a href="#dif-analysis-in-2pl-model" id="toc-dif-analysis-in-2pl-model">4. DIF analysis in 2PL model</a>
+<ul>
+<li><a href="#a-priori-power-analysis-1" id="toc-a-priori-power-analysis-1">4.1. A priori power analysis</a></li>
+<li><a href="#a-posteriori-power-analysis-1" id="toc-a-posteriori-power-analysis-1">4.2. A posteriori power
+analysis</a></li>
+</ul></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level1">
+<h1>1. Introduction</h1>
+<p>Statistical power is the probability of finding an effect of a
+certain size if it really exists. If studies have too little power, the
+probability increases that effects that actually exist will be
+overlooked. In addition, significant results are unlikely to represent
+actual effects. If the power is too high, there is a risk of wasting
+resources such as money and time when planning the study. Because of
+these considerations, power analysis is essential for an empirical
+study.</p>
+<p>When used in item response theory (IRT) models, power analysis can
+help evaluate study designs for psychological and educational
+assessments. IRT models serve to describe the relationship between a
+construct or ability to be tested and the actual response behaviour of
+the participants in a test. This leads to the question which IRT model
+better describes the data. Statistical tests are used here to test
+hypotheses about model fit or parameter values. Common methods for
+hypothesis testing in IRT models are the Wald, LR, score and gradient
+statistics. A power analysis for these tests clarifies, for example, how
+many participants are required to reject a falsely hypothesised model
+with a given desired probability. This prevents the use of a
+misspecified model from leading to misinterpretation of the results and
+consequently incorrect decision-making.</p>
+<p>This vignette presents the implementation of a power analysis for the
+Wald, Likelihood Ratio (LR), score and gradient tests for linear
+hypotheses using the free available R package irtpwr. It uses some IRT
+examples and treats basic as well as additional features of the package.
+It is directed towards beginner to intermediate level R users. Previous
+experience with the mirt package may be helpful. In the next chapters
+this vignette illustrates the application of irtpwr for two IRT use
+cases. First it carries out a power analysis for testing a Rasch model
+against a 2PL model. Secondly, a power analysis is conducted for testing
+differential item functioning (DIF) in a 2PL model. In each chapter,
+first of all, the underlying hypothesis is explained. Then it describes
+the application of irtpwr step by step. For this, the determination of
+power is explained for a case where the package user is devising an
+empirical study (a priori power analysis) and on the other hand where
+the package user has finished the data collection and now intends to
+perform a power analysis afterwards (a posteriori power analysis). This
+vignette aims to embed the R package into data analysis in psychology.
+At the same time, we want to show when and how can be used in
+practice.</p>
+</div>
+<div id="general-workflow-for-irtpwr" class="section level1">
+<h1>2. General workflow for irtpwr</h1>
+<p>To conduct the power analysis for the Wald, LR, Score, and Gradient
+Tests using we will cover the two-step workflow in detail:</p>
+<ul>
+<li>Setup Hypotheses ( function)</li>
+<li>Perform the power analysis ( function)</li>
+</ul>
+<p>Before we perform the power analysis with we setup the null and
+alternative hypothesis. The usage of is the following:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">setup.hypothesis</span>(type, <span class="at">altpars =</span> <span class="cn">NULL</span>, <span class="at">nullpars =</span> <span class="cn">NULL</span>)</span></code></pre></div>
+<p>With the argument we define the hypothesis test we intend to conduct.
+If we e.g. want to perform a power analysis to test the Rasch model
+against the 2PL model we set .</p>
+<p>There are currently three types available in the package:</p>
+<ul>
+<li>Testing a Rasch against a 2PL model (),</li>
+<li>Testing for DIF in a 2PL model (),</li>
+<li>Testing a PCM against a GPCM model ().</li>
+</ul>
+<p>In the next step we determine the parameters under the alternative ()
+and null () hypothesis. If we have already collected the data, we can
+use a fitted model (for a posteriori power analysis). However, if this
+is not the situation, we have the option to specify alternative
+parameters directly (for a priori power analysis). For example in cases
+where researchers assume a typical pattern in the item parameters and
+already know that they will test model fit or certain parameter values.
+The determination of the parameters under the null hypothesis is not
+always necessary because they are often implicitly defined by the
+alternative hypothesis.</p>
+<p>Finally, we are now ready to perform the power analysis by passing
+the hypothesis to . Besides the hypothesis, an alpha level needs to be
+specified. The function can:</p>
+<ul>
+<li>calculate a necessary sample size N given a desired power (using the
+argument, e.g. )</li>
+<li>calculate the power for a specific sample size N (using the
+argument, e.g. )</li>
+</ul>
+<p>To get more insights into the usage of this vignette now provides
+some examples starting with the power analysis to test the Rasch model
+against the 2PL model.</p>
+<p>To get ready, we first have to install the needed package:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;irtpwr&quot;</span>)</span></code></pre></div>
+<p>Then we have to load the package:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;irtpwr&quot;</span>)</span></code></pre></div>
+</div>
+<div id="rasch-against-2pl-model" class="section level1">
+<h1>3. Rasch against 2PL model</h1>
+<p>In psychology, researchers measure mental attributes of people whose
+values of e.g. mathematical ability or personality traits are not
+directly observable in this way. Hence psychological tests are
+constructed to measure latent properties. When a test taker answers a
+maths test, researchers want to conclude as reliably as possible about
+the person’s maths competence. Methods from IRT are used for
+psychological test construction and evaluation. A well-known approach is
+the Rasch model. The Rasch model assumes that the probability of solving
+an individual item from the test is determined by the characteristics of
+the item (item parameters) and of the person (person parameters). The
+more pronounced the math ability <span class="math inline">\(\theta\)</span> of person <span class="math inline">\(p\)</span> the higher the probability of answering
+an item correctly. Another observation regarding the Rasch model is that
+as the easiness <span class="math inline">\(d\)</span> of an item <span class="math inline">\(i\)</span> increases, the probability of answering
+the item correctly also increases. The easiness is known as the
+intercept-parameter. We can transfer this assumption into a formula:</p>
+<p><span class="math display">\[ \text{Pr}(U_{pi} = 1|\theta_{p}, d_{i})
+= \frac{e^{\theta_p + d_{i}}}{1 + e^{\theta_p + d_{i}}} \]</span></p>
+<p>One strict assumption of the Rasch model is that all items share the
+same slope parameter. In this context, the slope plays an important role
+in accurately distinguishing between abilities slightly above and
+abilities slightly below its easiness. In other literature the slope
+parameter is also called discrimination. Two people with an math ability
+difference of 1 would in all items have the same probability difference
+of solving an item correctly. The Rasch model equation from above does
+not contain an extra parameter for modeling the slope. For items that
+are not well described by the Rasch model, other more flexible models
+can be applied.</p>
+<p>The two-parameter logistic (2PL) model from Birnbaum (1968) is a more
+adaptable solution and can be seen as an extension of the Rasch model.
+When the assumption of equal slopes among all items is violated, this
+model can be utilized. Therefore the 2PL model introduces besides the
+intercept parameter or easiness <span class="math inline">\(d_{i}\)</span> a second item parameter called the
+slope parameter <span class="math inline">\(a\)</span> of an item <span class="math inline">\(i\)</span>. Mathematically the 2PL model can be
+described with:</p>
+<p><span class="math display">\[ \text{Pr}(U_{pi} = 1|\theta_{p},a_{i},
+d_{i}) = \frac{e^{a_i \cdot \theta_p + d_{i}}}{1 + e^{a_i \cdot \theta_p
++ d_{i}}} \]</span> If <span class="math inline">\(a\)</span> is high,
+it indicates that the item possesses a strong ability to distinguish
+among test taker. This means that the probability of giving a correct
+response increases more rapidly as the ability <span class="math inline">\(\theta\)</span> increases.</p>
+<p>When it comes to the evaluation of psychological and educational
+tests researcher face the question which IRT model is better to describe
+the data. There are various statistical methods such as Wald, LR, score
+and gradient tests that compare two models in terms of their data fit.
+In this example, our specific hypothesis test aims to address the
+question of whether the inclusion of the additional slope parameter in
+the 2PL model is essential for describing the data, or if the slope
+parameters are sufficiently similar for the Rasch model to adequately
+describe the data. Therefore it becomes relevant to test the null
+hypothesis of equal slope parameters as this may allow the rejection of
+an incorrectly assumed Rasch model. With a power analysis we can answer
+the question what sample size is minimally needed to discard the simpler
+Rasch model. In the following we first conduct a priori power analysis
+and then a posteriori power analysis for testing the Rasch model against
+the 2PL model.</p>
+<div id="a-priori-power-analysis" class="section level2">
+<h2>3.1. A priori power analysis</h2>
+<p>We are in the process of creating a novel test designed to assess the
+mathematical ability of test takers. We plan a test with 5 items that
+measure the same construct. After an intensive incorporation with the
+subject of math tests and the 5 already formulated items we discusses
+with other authors the expected item parameter for each item.
+Specifically, we hypothesize the presence of unequal slope parameters.
+We know that after collecting data we want to evaluate the test using
+the Rasch or the 2PL model. We aim to ensure that if a model comparison
+favors the 2PL model, we can confidently assert that this model choice
+provides the best fit for our expected data. This is only with a
+sufficiently large power possible. To conduct a power analysis we use
+the R package .</p>
+<p>To setup a hypothesis, we use the argument of the function to define
+the parameters under the alternative hypothesis of unequal slope
+parameters. We do not have to determine the null hypothesis of equal
+parameters because they are implicitly defined by the alternative
+hypothesis. Firstly, we generate distinct slope and intercept parameters
+for each item. Then we pass them into the argument from the function .
+Additionally, due to the underlying hypothesis test, we set the to .</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># parameters under the alternative hypothesis</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>altpars <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="fu">rlnorm</span>(<span class="dv">5</span>, <span class="at">sdlog =</span> <span class="fl">0.4</span>),    </span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>                <span class="at">d =</span> <span class="fu">rnorm</span>(<span class="dv">5</span>))                  </span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a> </span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>hyp <span class="ot">&lt;-</span> <span class="fu">setup.hypothesis</span>(<span class="at">type =</span> <span class="st">&quot;1PLvs2PL&quot;</span>, <span class="at">altpars =</span> altpars)</span></code></pre></div>
+<p>The hypothesis is prepared for subsequent power analysis. We want to
+know the required sample size for a test of the Rasch against 2PL model
+for a power of 0.8 while using an alpha level of 0.05. Therefore, we
+transfer the previously defined hypothesis into the function:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">irtpwr</span>(<span class="at">hyp =</span> hyp, <span class="at">power =</span> <span class="fl">0.8</span>, <span class="at">alpha =</span> <span class="fl">0.05</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">summary</span>(res)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">#&gt; Sample sizes for power = 0.8 (alpha = 0.05): </span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt;</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt; Statistic   N</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt;      Wald 503</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt;        LR 504</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt;     Score 520</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt;  Gradient 505</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt;</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt; Method: Analytical</span></span></code></pre></div>
+<p>Prior to the commencement of the study we now planned the sample
+size. The results show that to reach our desired power of 0.8 we need a
+sample size of 503 to 520. The Wald Test would in this case be the most
+efficient choice. In addition, we have the option to generate power
+curves through power analysis. This allows us to obtain a more
+comprehensive understanding of the associations between sample size and
+power:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">plot</span>(res) </span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>A second reflection about our study design revealed that we want a
+higher statistical power. The alternative and null hypothesis remain
+unchanged. We take the saved result object and modify it within the
+generic function:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">summary</span>(res, <span class="at">power =</span> <span class="fl">0.9</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt; Sample sizes for power = 0.8 (alpha = 0.05): </span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt;</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; Statistic   N</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt;      Wald 649</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt;        LR 650</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt;     Score 671</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt;  Gradient 652</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt;</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; Method: Analytical</span></span></code></pre></div>
+<p>As expected we need more test taker to answer the test to reach a
+power of 0.9. We minimum sample size would be 649.</p>
+</div>
+<div id="a-posteriori-power-analysis" class="section level2">
+<h2>3.2. A posteriori power analysis</h2>
+<p>In this chapter we already have constructed a 5 item math test but
+without a prior conducted power analysis. Exactly 1000 participants
+answered the test. We aim to assess the test by employing both the Rasch
+model and the 2PL model. Later on, we would compare both IRT models and
+conclude which one would provide the best model fit. To allow a reliable
+model comparison we need a minimum of 80% statistical power. To do this,
+we conduct a posteriori power analysis. First of all we need the dataset
+from our math test. We use the LSAT 7 dataset which is included in the
+package. The dataset includes 5 columns (for each item one) and 1000
+rows (for each participant one). One row shows for each item if the
+participant answered this item correctly (coded with 1) or not (coded
+with 0). For the first time we now have to install and load the
+package:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;mirt&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;mirt&quot;</span>)</span></code></pre></div>
+<p>We load the data with:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">expand.table</span>(LSAT7)</span></code></pre></div>
+<p>For the power analysis we again have to define the and parameters
+under the alternative hypothesis. In this situation where the data is
+collected we can use a fitted model. Hence, we fit a 2PL model to
+analyze our data and obtain the parameters associated with the
+alternative hypothesis of unequal slopes. To fit a 2PL model one can
+execute the following code:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>mirtfit <span class="ot">&lt;-</span> <span class="fu">mirt</span>(dat, <span class="dv">1</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<p>The fitted 2PL model is then used for the argument from the function
+. As above we set . We write the following code:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>hyp <span class="ot">&lt;-</span> <span class="fu">setup.hypothesis</span>(<span class="at">type =</span> <span class="st">&quot;1PLvs2PL&quot;</span>, <span class="at">altpars =</span> mirtfit)</span></code></pre></div>
+<p>To calculate the power for a sample size of 1000 using our hypothesis
+from above we run:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">irtpwr</span>(<span class="at">hyp =</span> hyp, <span class="at">N =</span> <span class="dv">1000</span>, <span class="at">alpha =</span> <span class="fl">0.05</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="fu">summary</span>(res)</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt; Power for N = 1000 (alpha = 0.05):  </span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt;</span></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#&gt; Statistic  Power</span></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co">#&gt;      Wald 0.7411</span></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="co">#&gt;        LR 0.8513</span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="co">#&gt;     Score 0.8308</span></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a><span class="co">#&gt;  Gradient 0.8987</span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="co">#&gt;</span></span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="co">#&gt; Method: Analytical</span></span></code></pre></div>
+<p>For a sample size of 1000 we reach a power between 0.74 to 0.89
+depending the underlying test statistic. For our further analysis we
+should use the gradient test. If the gradient test favors the 2PL model,
+we can confidently claim that the 2PL model is a better fit than the
+Rasch model with a probability of 89%. We would conclude that given our
+data it would be better to assume unequal slope parameter.</p>
+<p>A detailed look on the relationships between sample size and power
+can be plotted with:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">plot</span>(res) </span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The function builds on one of two available methods that are
+described in our paper in more detail (Zimmer et al. (2022), <a href="https://doi.org/10.1007/s11336-022-09883-5" class="uri">https://doi.org/10.1007/s11336-022-09883-5</a>):</p>
+<ul>
+<li>an analytical approach (, this is the default option)</li>
+<li>a sampling-based approach ()</li>
+</ul>
+<p>To use the sampling based approach, we can execute:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">irtpwr</span>(<span class="at">hyp =</span> hyp, <span class="at">N =</span> <span class="dv">600</span>, <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">method =</span> <span class="st">&quot;sampling&quot;</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="fu">summary</span>(res)</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="co">#&gt; Power for N = 1000 (alpha = 0.05):  </span></span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="co">#&gt;</span></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="co">#&gt; Statistic  Power</span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="co">#&gt;      Wald 0.4946</span></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="co">#&gt;        LR 0.6073</span></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="co">#&gt;     Score 0.5957</span></span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a><span class="co">#&gt;  Gradient 0.6578</span></span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="co">#&gt;</span></span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a><span class="co">#&gt; Method: Sampling-Based</span></span></code></pre></div>
+<p>The sampling-based approach offers two parameters that can be
+increased from their default values to obtain a more exact result. These
+are the sample size of the sampling-based approach () and the sample
+size for the approximation of the Fisher expected matrix (). These may
+be tweaked upwards if the result from repeated executions of the
+function is not stable.</p>
+<p>Since the analytical approach can be too time-intensive for larger
+numbers of items, we might want to know beforehand how long it will take
+approximately. We do so using the function. In our example hypothesis,
+we used 5 items. To estimate the computation time (in seconds) for 10
+items we can use:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">calc.time</span>(hyp, <span class="at">n.items =</span> <span class="dv">10</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co">#&gt; [1] 103.488</span></span></code></pre></div>
+<p>Note that the estimated time can sometimes deviate from the actual
+time. As a result from our test runs, we suggest to expect an increase
+of 80% as a worst case scenario. Is the estimated computational load
+when using the analytical default setting too large, we can use the
+sampling-based approach for these applications. The interpretation of
+the output remains the same.</p>
+</div>
+</div>
+<div id="dif-analysis-in-2pl-model" class="section level1">
+<h1>4. DIF analysis in 2PL model</h1>
+<p>A central assumption of parametric logistic models of IRT is that
+people with the same level of ability should have the same probability
+of solving an item correctly. If this model assumption is violated, a
+test can be unfair. This means that items of a test are easier for one
+group of subjects than for another group of subjects despite the same
+ability characteristics. This violation of measurement invariance is
+called differential item functioning (DIF). If an item of an tests is
+presenting DIF, this item functions differently for different groups.
+Common sociodemographic characteristics that are examined when detecting
+DIF are gender, age, language and academic background. DIF tests play an
+important role in educational testing. If a test is unfair, we
+disadvantage a certain group of subjects, which could lead to wrong
+decisions. For example in relation to a student who takes aptitude tests
+and the result decides whether he is admitted to a course of studies or
+not. Therefore, it is important to reliably detect DIF in data.
+Statistical procedures such as Wald, LR, score-based and gradient tests
+are used to detect DIF. In this context, we need the sufficient
+likelihood to find a DIF effect if it really exists. Hence, we employ a
+power analysis to estimate how likely we will detect actually existing
+DIF for different groups of people. In an other situation we decide how
+many people do we need to detect an expected DIF effect in a specific
+item of interest. In the next steps we conduct a priori power analysis
+for the Wald, LR, score and gradient tests.</p>
+<div id="a-priori-power-analysis-1" class="section level2">
+<h2>4.1. A priori power analysis</h2>
+<p>In this szenario we are about to start a study where we constructed
+an educational test which measures the mathematical ability of test
+taker. The test includes 5 items that measure the same construct.
+Following the formulation of the items and engaging in discussions with
+several mathematics experts, we have identified item 1 as problematic.
+For item 1 we assume that it could potentially show DIF due to the
+wording of the item. The assumption is that non-native English speaking
+test takers will struggle with this item more than native English
+speaking test takers even though we only want to test mathematics
+ability. In other words, test taker with the same math abilities might
+have different solution probabilities for item 1. Thus we want to apply
+a power analysis that answers the question: At a significance level of
+0.05 and a power of 0.8, what is the minimum sample size required to
+identify a significant item parameter difference between native and
+non-native English speaking test taker with a DIF effect in the d
+parameter of 0.5 and in the a parameter of 2 in a 2PL model? We assume
+standard normally distributed person parameters for all
+participants.</p>
+<p>In the previous chapter we have already seen the Rasch against 2PL
+hypothesis setup. The procedure for the DIF in 2PL hypothesis () is
+analogous, yet a bit more complicated since we need to define two
+groups, the native and non-native English speaking group. The package is
+already loaded so we can start with our example:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>native <span class="ot">&lt;-</span> nonnative <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="fu">rlnorm</span>(<span class="dv">5</span>, <span class="at">sdlog =</span> <span class="fl">0.2</span>), </span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>                            <span class="at">d =</span> <span class="fu">rnorm</span>(<span class="dv">5</span>))               </span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>nonnative<span class="sc">$</span>a[<span class="dv">1</span>] <span class="ot">&lt;-</span> (nonnative<span class="sc">$</span>a[<span class="dv">1</span>])<span class="sc">^</span><span class="dv">2</span>   <span class="co"># DIF effect in the a parameter</span></span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>nonnative<span class="sc">$</span>d[<span class="dv">1</span>] <span class="ot">&lt;-</span> nonnative<span class="sc">$</span>d[<span class="dv">1</span>] <span class="sc">-</span> <span class="fl">0.5</span> <span class="co"># DIF effect in the d parameter</span></span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a>altpars <span class="ot">&lt;-</span> <span class="fu">list</span>(native, nonnative) <span class="co"># parameters under the alternative hypothesis</span></span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a></span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a>hyp <span class="ot">&lt;-</span> <span class="fu">setup.hypothesis</span>(<span class="at">type =</span> <span class="st">&quot;DIF2PL&quot;</span>, <span class="at">altpars =</span> altpars)</span></code></pre></div>
+<p>Note that for both hypothesis types, we do not have to provide the
+parameters under the null hypothesis here, because they are implicitly
+defined by the alternative hypothesis. The function also allows for
+specifying parameters under the null hypothesis via the argument for
+cases in which the parameters under the null hypothesis are not
+identified by the parameters under the alternative. To implement such
+custom hypotheses, we provide additional guidance in the
+“adding_hypotheses” vignette. Some templates for hypothesis objects are
+included in the “hypothesis_templates” vignette.</p>
+<p>Given the specifications we already made, we now can obtain the
+sample size necessary for reaching a power of 0.8 while using an alpha
+level of 0.05. We perform the power analysis with:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">irtpwr</span>(<span class="at">hyp =</span> hyp, <span class="at">power =</span> <span class="fl">0.8</span>, <span class="at">alpha =</span> <span class="fl">0.05</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="fu">summary</span>(res)</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a><span class="co">#&gt; Sample sizes for power = 0.8 (alpha = 0.05): </span></span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="co">#&gt;</span></span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="co">#&gt; Statistic   N</span></span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a><span class="co">#&gt;      Wald 814</span></span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a><span class="co">#&gt;        LR 794</span></span>
+<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a><span class="co">#&gt;     Score 796</span></span>
+<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a><span class="co">#&gt;  Gradient 790</span></span>
+<span id="cb18-11"><a href="#cb18-11" tabindex="-1"></a><span class="co">#&gt;</span></span>
+<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a><span class="co">#&gt; Method: Analytical</span></span></code></pre></div>
+<p>Based on these findings, it is evident that to achieve a power of 0.8
+in detecting the group difference in our example, an approximate sample
+size ranging from 790 to 814 is necessary. If 794 participants answer
+the test and if e.g. the LR Test is used to detect DIF we can say with a
+probability of 80% that finding a DIF effect means there is actually a
+violation in the measurement invariance assumption. By utilizing this
+information we can avoid an over- and underpowered study design when it
+comes to the study implementation in practice. To sum up we see that the
+gradient statistic would be the most efficient to test our hypothesis:
+We would need a sample size of 790 to reach our desired power.</p>
+<p>We can also plot the power curves of the power analysis. Here we get
+a more detailed look on the relationships between sample size and power
+by using:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="fu">plot</span>(res) </span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="a-posteriori-power-analysis-1" class="section level2">
+<h2>4.2. A posteriori power analysis</h2>
+<p>In this part of the vignette we describe a situation where we have
+constructed the math test and 732 participants already answered the
+test. Besides that they reported whether they were native English
+speakers or not. A pre-study power analysis was not conducted. We can
+use a posteriori power analysis to estimate how likely we will detect
+actually existing DIF for groups differing in language background. It
+resulted a data frame called dat with 732 observations and 6 columns.
+The first 6 rows are shown:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="fu">head</span>(dat)</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="co">#&gt;   item.1 item.2 item.3 item.4 item.5  language</span></span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="co">#&gt; 1      0      0      0      0      0 nonnative</span></span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a><span class="co">#&gt; 2      0      0      0      0      1    native</span></span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a><span class="co">#&gt; 3      1      1      0      1      1    native</span></span>
+<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a><span class="co">#&gt; 4      0      0      1      0      0 nonnative</span></span>
+<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a><span class="co">#&gt; 5      1      0      1      0      1    native</span></span>
+<span id="cb20-9"><a href="#cb20-9" tabindex="-1"></a><span class="co">#&gt; 6      0      0      0      1      1 nonnative</span></span></code></pre></div>
+<p>Now after we have collected the data in an extensive study we
+estimate the item parameter along the covariate language. Once again, we
+assume the possibility of the presence of DIF in item 1. The item
+parameter are estimated for each group by using the function from the
+package . But first we have to define a newmodel where we constrain the
+slopes and intercepts across groups for item 2 to 5. The parameters from
+item 1, our item of interest, may vary between the groups. We assume
+standard normally distributed person parameters for all participants.
+This results in the following code:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>newmodel <span class="ot">&lt;-</span> <span class="st">&#39;</span></span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="st">    F = 1-5</span></span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a><span class="st">    CONSTRAINB = (2-5, a1), (2-5, d)&#39;</span></span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>difmirt <span class="ot">&lt;-</span> <span class="fu">multipleGroup</span>(<span class="fu">as.data.frame</span>(dat[,<span class="st">&quot;item&quot;</span>]), newmodel, <span class="at">group =</span> dat<span class="sc">$</span>language)</span></code></pre></div>
+<p>Now let us take a look at the parameters for both groups:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">coef</span>(difmirt, </span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>     <span class="at">IRTpars =</span> <span class="cn">FALSE</span>,  </span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a>     <span class="at">simplify =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a>pars</span>
+<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a><span class="co">#&gt; $native</span></span>
+<span id="cb22-7"><a href="#cb22-7" tabindex="-1"></a><span class="co">#&gt; $items</span></span>
+<span id="cb22-8"><a href="#cb22-8" tabindex="-1"></a><span class="co">#&gt;       a1      d</span></span>
+<span id="cb22-9"><a href="#cb22-9" tabindex="-1"></a><span class="co">#&gt; V1 1.558  0.594</span></span>
+<span id="cb22-10"><a href="#cb22-10" tabindex="-1"></a><span class="co">#&gt; V2 2.241 -0.390</span></span>
+<span id="cb22-11"><a href="#cb22-11" tabindex="-1"></a><span class="co">#&gt; V3 2.204 -0.328</span></span>
+<span id="cb22-12"><a href="#cb22-12" tabindex="-1"></a><span class="co">#&gt; V4 1.908 -1.043</span></span>
+<span id="cb22-13"><a href="#cb22-13" tabindex="-1"></a><span class="co">#&gt; V5 1.003  1.040</span></span>
+<span id="cb22-14"><a href="#cb22-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb22-15"><a href="#cb22-15" tabindex="-1"></a><span class="co">#&gt; $nonnative</span></span>
+<span id="cb22-16"><a href="#cb22-16" tabindex="-1"></a><span class="co">#&gt; $items</span></span>
+<span id="cb22-17"><a href="#cb22-17" tabindex="-1"></a><span class="co">#&gt;       a1      d</span></span>
+<span id="cb22-18"><a href="#cb22-18" tabindex="-1"></a><span class="co">#&gt; V1 1.677  0.012</span></span>
+<span id="cb22-19"><a href="#cb22-19" tabindex="-1"></a><span class="co">#&gt; V2 2.241 -0.390</span></span>
+<span id="cb22-20"><a href="#cb22-20" tabindex="-1"></a><span class="co">#&gt; V3 2.204 -0.328</span></span>
+<span id="cb22-21"><a href="#cb22-21" tabindex="-1"></a><span class="co">#&gt; V4 1.908 -1.043</span></span>
+<span id="cb22-22"><a href="#cb22-22" tabindex="-1"></a><span class="co">#&gt; V5 1.003  1.040</span></span></code></pre></div>
+<p>With this item parameter estimates we now have all informations to
+set up the hypothesis for a DIF effect in a 2PL model. As in the last
+chapter we prepare the parameters under the alternative hypothesis for
+the altpars argument of the setup.hypothesis function. One way to do
+this is the following:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="co"># parameters of native English speaking test taker</span></span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>pars_native <span class="ot">&lt;-</span> pars[[<span class="st">&quot;native&quot;</span>]][[<span class="st">&quot;items&quot;</span>]]</span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>native <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> pars_native[,<span class="st">&quot;a1&quot;</span>], </span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>               <span class="at">d =</span> pars_native[,<span class="st">&quot;d&quot;</span>])</span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a></span>
+<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a><span class="co"># parameters of non-native English speaking test taker</span></span>
+<span id="cb23-7"><a href="#cb23-7" tabindex="-1"></a>pars_nonnative <span class="ot">&lt;-</span> pars[[<span class="st">&quot;nonnative&quot;</span>]][[<span class="st">&quot;items&quot;</span>]]</span>
+<span id="cb23-8"><a href="#cb23-8" tabindex="-1"></a>nonnative <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> pars_nonnative[,<span class="st">&quot;a1&quot;</span>], </span>
+<span id="cb23-9"><a href="#cb23-9" tabindex="-1"></a>                  <span class="at">d =</span> pars_nonnative[,<span class="st">&quot;d&quot;</span>])</span>
+<span id="cb23-10"><a href="#cb23-10" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="#cb23-11" tabindex="-1"></a>altpars <span class="ot">&lt;-</span> <span class="fu">list</span>(native, nonnative) <span class="co"># parameters under the alternative hypothesis</span></span>
+<span id="cb23-12"><a href="#cb23-12" tabindex="-1"></a></span>
+<span id="cb23-13"><a href="#cb23-13" tabindex="-1"></a>hyp <span class="ot">&lt;-</span> <span class="fu">setup.hypothesis</span>(<span class="at">type =</span> <span class="st">&quot;DIF2PL&quot;</span>, <span class="at">altpars =</span> altpars)</span></code></pre></div>
+<p>To calculate the statistical power for a sample size of 732 using our
+DIF hypothesis, we execute:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">irtpwr</span>(<span class="at">hyp =</span> hyp, <span class="at">N =</span> <span class="dv">732</span>, <span class="at">alpha =</span> <span class="fl">0.05</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a><span class="fu">summary</span>(res)</span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a><span class="co">#&gt;  Power for N = 732 (alpha = 0.05): </span></span>
+<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb24-6"><a href="#cb24-6" tabindex="-1"></a><span class="co">#&gt;  Statistic  Power</span></span>
+<span id="cb24-7"><a href="#cb24-7" tabindex="-1"></a><span class="co">#&gt;       Wald 0.7779</span></span>
+<span id="cb24-8"><a href="#cb24-8" tabindex="-1"></a><span class="co">#&gt;         LR 0.7917</span></span>
+<span id="cb24-9"><a href="#cb24-9" tabindex="-1"></a><span class="co">#&gt;      Score 0.7900</span></span>
+<span id="cb24-10"><a href="#cb24-10" tabindex="-1"></a><span class="co">#&gt;   Gradient 0.7949</span></span>
+<span id="cb24-11"><a href="#cb24-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb24-12"><a href="#cb24-12" tabindex="-1"></a><span class="co">#&gt; Method: Analytical</span></span></code></pre></div>
+<p>As above a graphical interpretation can be shown:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="fu">plot</span>(res) </span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>In sum the power to detect DIF if it really exists in item 1 is too
+low. We can obtain the sample size necessary for reaching a power of
+0.9. The object resulting from can be used to gather further information
+about the relationship between sample size and power:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="fu">summary</span>(res, <span class="at">power =</span> <span class="fl">0.9</span>) </span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a><span class="co">#&gt;  Sample sizes for power = 0.9 (alpha = 0.05): </span></span>
+<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a><span class="co">#&gt;  Statistic    N</span></span>
+<span id="cb26-6"><a href="#cb26-6" tabindex="-1"></a><span class="co">#&gt;       Wald 1013</span></span>
+<span id="cb26-7"><a href="#cb26-7" tabindex="-1"></a><span class="co">#&gt;         LR  981</span></span>
+<span id="cb26-8"><a href="#cb26-8" tabindex="-1"></a><span class="co">#&gt;      Score  985</span></span>
+<span id="cb26-9"><a href="#cb26-9" tabindex="-1"></a><span class="co">#&gt;   Gradient  974</span></span>
+<span id="cb26-10"><a href="#cb26-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb26-11"><a href="#cb26-11" tabindex="-1"></a><span class="co">#&gt; Method: Analytical</span></span></code></pre></div>
+<p>The results shows that the choice for using the gradient statistic
+for detecting DIF in the 2PL model would be the most efficient. To reach
+a power of 0.9 we have to recruit 974 people. In contrast, it would take
+as many as 1013 people to achieve the same power if we use the Wald
+test.</p>
+<p>But maybe we do not have enough resources to test up to 974
+participants. Due to budget constraints or limited financial resources
+available and a strict deadline we only have time to examine maximum 800
+participants. How high is the power when 800 test taker answer the test
+given the hypothesis we have earlier defined? To obtain the power for a
+different sample size than originally specified in our execution of the
+irtpwr function, we type in:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="fu">summary</span>(res, <span class="at">N =</span> <span class="dv">800</span>) </span>
+<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a><span class="co">#&gt;  Power for N = 800 (alpha = 0.05): </span></span>
+<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a><span class="co">#&gt;  Statistic  Power</span></span>
+<span id="cb27-6"><a href="#cb27-6" tabindex="-1"></a><span class="co">#&gt;       Wald 0.8154</span></span>
+<span id="cb27-7"><a href="#cb27-7" tabindex="-1"></a><span class="co">#&gt;         LR 0.8283</span></span>
+<span id="cb27-8"><a href="#cb27-8" tabindex="-1"></a><span class="co">#&gt;      Score 0.8267</span></span>
+<span id="cb27-9"><a href="#cb27-9" tabindex="-1"></a><span class="co">#&gt;   Gradient 0.8313</span></span>
+<span id="cb27-10"><a href="#cb27-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb27-11"><a href="#cb27-11" tabindex="-1"></a><span class="co">#&gt; Method: Analytical</span></span></code></pre></div>
+<p>We can achieve a minimum power of 0.82 (see Wald test) to detect DIF
+in item 1 when recruiting 800 participants. This power is enough for us
+and we can continue with the data collection.</p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

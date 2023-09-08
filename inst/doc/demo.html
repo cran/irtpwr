@@ -377,40 +377,40 @@ hypotheses for a 3PL model and a multidimensional model.</p>
 <div id="toy-example" class="section level2">
 <h2>Toy Example</h2>
 <p>We can load the irtpwr package using:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(irtpwr)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mirt)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loading required package: stats4</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loading required package: lattice</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(irtpwr)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(mirt)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; Loading required package: stats4</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#&gt; Loading required package: lattice</span></span></code></pre></div>
 <p>We want to know the power and the required sample size for a test of
 the Rasch vs 2PL model. We use the LSAT 7 data set which is included in
 the mirt package.</p>
 <p>As a first step, we load the data set and fit a 2PL model.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">expand.table</span>(LSAT7)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>mirtfit <span class="ot">&lt;-</span> <span class="fu">mirt</span>(dat, <span class="dv">1</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">expand.table</span>(LSAT7)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>mirtfit <span class="ot">&lt;-</span> <span class="fu">mirt</span>(dat, <span class="dv">1</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <p>The 2PL parameters are then used as parameters for the alternative
 hypothesis in our hypothesis definition.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>hyp <span class="ot">&lt;-</span> <span class="fu">setup.hypothesis</span>(<span class="at">type =</span> <span class="st">&quot;1PLvs2PL&quot;</span>, <span class="at">altpars =</span> mirtfit)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>hyp <span class="ot">&lt;-</span> <span class="fu">setup.hypothesis</span>(<span class="at">type =</span> <span class="st">&quot;1PLvs2PL&quot;</span>, <span class="at">altpars =</span> mirtfit)</span></code></pre></div>
 <p>We can now perform the power analysis. We want to determine the
 sample size necessary for a power of .8 while using an alpha level of
 .05.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">irtpwr</span>(<span class="at">hyp =</span> hyp, <span class="at">power =</span> <span class="fl">0.8</span>, <span class="at">alpha =</span> <span class="fl">0.05</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Sample sizes for power = 0.8 (alpha = 0.05): </span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Statistic    N</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       Wald 1134</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         LR  887</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      Score  932</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Gradient  778</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Method: Analytical</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">irtpwr</span>(<span class="at">hyp =</span> hyp, <span class="at">power =</span> <span class="fl">0.8</span>, <span class="at">alpha =</span> <span class="fl">0.05</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">summary</span>(res)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt;  Sample sizes for power = 0.8 (alpha = 0.05): </span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt;  Statistic    N</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt;       Wald 1134</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt;         LR  887</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt;      Score  932</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt;   Gradient  778</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; Method: Analytical</span></span></code></pre></div>
 <p>Here we see that the gradient statistic would be the most efficient
 to test our hypothesis: We would need a sample size of 778 to reach our
 desired power.</p>
 <p>We can also plot the power curves to get a more detailed look on the
 relationships between sample size and power:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code></pre></div>
 <p><img src="data:image/png;base64,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" width="70%" /></p>
 </div>
 </div>
@@ -424,8 +424,8 @@ detail.</p>
 specify alternative parameters directly. In both cases, we use the
 altpars argument of the setup.hypothesis function. An example of direct
 specification is:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>altpars <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="fu">rlnorm</span>(<span class="dv">5</span>, <span class="at">sdlog =</span> <span class="fl">0.4</span>), <span class="at">d =</span> <span class="fu">rnorm</span>(<span class="dv">5</span>))</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>hyp <span class="ot">&lt;-</span> <span class="fu">setup.hypothesis</span>(<span class="at">type =</span> <span class="st">&quot;1PLvs2PL&quot;</span>, <span class="at">altpars =</span> altpars)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>altpars <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="fu">rlnorm</span>(<span class="dv">5</span>, <span class="at">sdlog =</span> <span class="fl">0.4</span>), <span class="at">d =</span> <span class="fu">rnorm</span>(<span class="dv">5</span>))</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>hyp <span class="ot">&lt;-</span> <span class="fu">setup.hypothesis</span>(<span class="at">type =</span> <span class="st">&quot;1PLvs2PL&quot;</span>, <span class="at">altpars =</span> altpars)</span></code></pre></div>
 <p>You can use the type argument to specify which type of hypothesis
 test you want to perform.</p>
 <p>The following types are currently available in the package:</p>
@@ -438,15 +438,15 @@ test you want to perform.</p>
 toy example above. The procedure for the DIF in 2PL hypothesis is
 analogous, yet a bit more complicated since we need to define two
 groups. An example is:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>group1 <span class="ot">&lt;-</span> group2 <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="fu">rlnorm</span>(<span class="dv">5</span>, <span class="at">sdlog =</span> <span class="fl">0.2</span>),</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">d =</span> <span class="fu">rnorm</span>(<span class="dv">5</span>))</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>group2<span class="sc">$</span>a[<span class="dv">1</span>] <span class="ot">&lt;-</span> (group2<span class="sc">$</span>a[<span class="dv">1</span>])<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>group2<span class="sc">$</span>d[<span class="dv">1</span>] <span class="ot">&lt;-</span> group2<span class="sc">$</span>d[<span class="dv">1</span>] <span class="sc">+</span> <span class="fl">0.5</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>altpars <span class="ot">&lt;-</span> <span class="fu">list</span>(group1, group2)</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>hyp <span class="ot">&lt;-</span> <span class="fu">setup.hypothesis</span>(<span class="at">type =</span> <span class="st">&quot;DIF2PL&quot;</span>, <span class="at">altpars =</span> altpars)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>group1 <span class="ot">&lt;-</span> group2 <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="fu">rlnorm</span>(<span class="dv">5</span>, <span class="at">sdlog =</span> <span class="fl">0.2</span>),</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>    <span class="at">d =</span> <span class="fu">rnorm</span>(<span class="dv">5</span>))</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>group2<span class="sc">$</span>a[<span class="dv">1</span>] <span class="ot">&lt;-</span> (group2<span class="sc">$</span>a[<span class="dv">1</span>])<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>group2<span class="sc">$</span>d[<span class="dv">1</span>] <span class="ot">&lt;-</span> group2<span class="sc">$</span>d[<span class="dv">1</span>] <span class="sc">+</span> <span class="fl">0.5</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>altpars <span class="ot">&lt;-</span> <span class="fu">list</span>(group1, group2)</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>hyp <span class="ot">&lt;-</span> <span class="fu">setup.hypothesis</span>(<span class="at">type =</span> <span class="st">&quot;DIF2PL&quot;</span>, <span class="at">altpars =</span> altpars)</span></code></pre></div>
 <p>Note that for both hypothesis types, we do not have to provide the
 parameters under the null hypothesis here, because they are implicitly
 defined by the alternative hypothesis. The setup.hypothesis function
@@ -470,46 +470,46 @@ argument, e.g. N = 600)</li>
 </ul>
 <p>For example, to calculate the power for a sample size of 600 using
 our DIF hypothesis from above:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">irtpwr</span>(<span class="at">hyp =</span> hyp, <span class="at">N =</span> <span class="dv">600</span>, <span class="at">alpha =</span> <span class="fl">0.05</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Power for N = 600 (alpha = 0.05): </span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Statistic  Power</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       Wald 0.5411</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         LR 0.5501</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      Score 0.5481</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Gradient 0.5523</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Method: Analytical</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">irtpwr</span>(<span class="at">hyp =</span> hyp, <span class="at">N =</span> <span class="dv">600</span>, <span class="at">alpha =</span> <span class="fl">0.05</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">summary</span>(res)</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#&gt;  Power for N = 600 (alpha = 0.05): </span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt;  Statistic  Power</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt;       Wald 0.5411</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt;         LR 0.5501</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt;      Score 0.5481</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt;   Gradient 0.5523</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; Method: Analytical</span></span></code></pre></div>
 <p>The object resulting from irtpwr can be used to gather further
 information about the relationship between sample size and power. For
 example, we can obtain the sample size necessary for reaching a power of
 .8.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res, <span class="at">power =</span> <span class="fl">0.8</span>)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Sample sizes for power = 0.8 (alpha = 0.05): </span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Statistic    N</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       Wald 1061</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         LR 1039</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      Score 1044</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Gradient 1034</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Method: Analytical</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">summary</span>(res, <span class="at">power =</span> <span class="fl">0.8</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co">#&gt;  Sample sizes for power = 0.8 (alpha = 0.05): </span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt;  Statistic    N</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt;       Wald 1061</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt;         LR 1039</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt;      Score 1044</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co">#&gt;   Gradient 1034</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co">#&gt; Method: Analytical</span></span></code></pre></div>
 <p>We can also obtain the power for a different sample size than
 originally specified in our execution of the irtpwr function.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res, <span class="at">N =</span> <span class="dv">700</span>)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Power for N = 700 (alpha = 0.05): </span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Statistic  Power</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       Wald 0.6109</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         LR 0.6203</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      Score 0.6182</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Gradient 0.6227</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Method: Analytical</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">summary</span>(res, <span class="at">N =</span> <span class="dv">700</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co">#&gt;  Power for N = 700 (alpha = 0.05): </span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#&gt;  Statistic  Power</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt;       Wald 0.6109</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co">#&gt;         LR 0.6203</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#&gt;      Score 0.6182</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="co">#&gt;   Gradient 0.6227</span></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co">#&gt; Method: Analytical</span></span></code></pre></div>
 <p>The irtpwr function builds on one of two available methods that are
 described in our paper in more detail (Zimmer et al. (2022), <a href="https://doi.org/10.1007/s11336-022-09883-5" class="uri">https://doi.org/10.1007/s11336-022-09883-5</a>):</p>
 <ul>
@@ -518,18 +518,18 @@ option)</li>
 <li>a sampling-based approach (method = “sampling”)</li>
 </ul>
 <p>To use the sampling based approach, we can execute:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">irtpwr</span>(<span class="at">hyp =</span> hyp, <span class="at">N =</span> <span class="dv">600</span>, <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">method =</span> <span class="st">&quot;sampling&quot;</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Power for N = 600 (alpha = 0.05): </span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Statistic  Power</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       Wald 0.5877</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         LR 0.5975</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      Score 0.5956</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Gradient 0.6000</span></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Method: Sampling-Based</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">irtpwr</span>(<span class="at">hyp =</span> hyp, <span class="at">N =</span> <span class="dv">600</span>, <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">method =</span> <span class="st">&quot;sampling&quot;</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="fu">summary</span>(res)</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt;  Power for N = 600 (alpha = 0.05): </span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt;  Statistic  Power</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co">#&gt;       Wald 0.5877</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co">#&gt;         LR 0.5975</span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="co">#&gt;      Score 0.5956</span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="co">#&gt;   Gradient 0.6000</span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a><span class="co">#&gt; Method: Sampling-Based</span></span></code></pre></div>
 <p>The sampling-based approach offers two parameters that can be
 increased from their default values to obtain a more exact result. These
 are the sample size of the sampling-based approach (sampling.npers) and
@@ -541,8 +541,8 @@ numbers of items, we might want to know beforehand how long it will take
 approximately. We do so using the calc.time function.</p>
 <p>In our example hypothesis, we used 5 items. To estimate the
 computation time for 7 items we can use:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">calc.time</span>(hyp, <span class="at">n.items =</span> <span class="dv">7</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 98.56</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">calc.time</span>(hyp, <span class="at">n.items =</span> <span class="dv">7</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co">#&gt; [1] 46.08</span></span></code></pre></div>
 <p>Note that the estimated time can sometimes deviate from the actual
 time. As a result from our test runs, we suggest to expect an increase
 of 80% as a worst case scenario.</p>
@@ -561,30 +561,30 @@ future.</p>
 (1,0,.2) for the a,d, and g parameters respectively. This hypothesis is
 implemented as the type “3PL_basic” we later use in the setup.hypothesis
 function. The parameters under the alternative hypothesis are:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>altpars <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">a =</span> <span class="fu">c</span>(<span class="fl">1.1</span>,<span class="fu">seq</span>(.<span class="dv">5</span>,<span class="fl">1.4</span>,<span class="at">length.out=</span><span class="dv">4</span>)),</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">d =</span> <span class="fu">c</span>(.<span class="dv">1</span>,<span class="fu">seq</span>(<span class="fl">1.3</span>,<span class="sc">-</span><span class="fl">1.3</span>,<span class="at">length.out=</span><span class="dv">4</span>)),</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">g =</span> <span class="fu">c</span>(.<span class="dv">22</span>,<span class="fu">rep</span>(.<span class="dv">2</span>,<span class="dv">4</span>))</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>altpars <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>  <span class="at">a =</span> <span class="fu">c</span>(<span class="fl">1.1</span>,<span class="fu">seq</span>(.<span class="dv">5</span>,<span class="fl">1.4</span>,<span class="at">length.out=</span><span class="dv">4</span>)),</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>  <span class="at">d =</span> <span class="fu">c</span>(.<span class="dv">1</span>,<span class="fu">seq</span>(<span class="fl">1.3</span>,<span class="sc">-</span><span class="fl">1.3</span>,<span class="at">length.out=</span><span class="dv">4</span>)),</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>  <span class="at">g =</span> <span class="fu">c</span>(.<span class="dv">22</span>,<span class="fu">rep</span>(.<span class="dv">2</span>,<span class="dv">4</span>))</span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>)</span></code></pre></div>
 <p>We setup the hypothesis:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>hyp <span class="ot">&lt;-</span> <span class="fu">setup.hypothesis</span>(<span class="at">type =</span> <span class="st">&quot;3PL_basic&quot;</span>, <span class="at">altpars =</span> altpars)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>hyp <span class="ot">&lt;-</span> <span class="fu">setup.hypothesis</span>(<span class="at">type =</span> <span class="st">&quot;3PL_basic&quot;</span>, <span class="at">altpars =</span> altpars)</span></code></pre></div>
 <p>We calculate the power using a sampling-based approach. Since we ran
 into convergence problems using the default SE.type value, we choose an
 alternative (SE.type = “Fisher”).</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">irtpwr</span>(<span class="at">hyp =</span> hyp, <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">power =</span> <span class="fl">0.8</span>,</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">&quot;sampling&quot;</span>, <span class="at">SE.type =</span> <span class="st">&quot;Fisher&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">irtpwr</span>(<span class="at">hyp =</span> hyp, <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">power =</span> <span class="fl">0.8</span>,</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">&quot;sampling&quot;</span>, <span class="at">SE.type =</span> <span class="st">&quot;Fisher&quot;</span>)</span></code></pre></div>
 <p>We can obtain the result using</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Sample sizes for power = 0.8 (alpha = 0.05): </span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Statistic    N</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       Wald 3658</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         LR 3956</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      Score 3967</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Gradient 4098</span></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Method: Sampling-Based</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">summary</span>(res)</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co">#&gt;  Sample sizes for power = 0.8 (alpha = 0.05): </span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="co">#&gt;  Statistic    N</span></span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="co">#&gt;       Wald 3658</span></span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a><span class="co">#&gt;         LR 3956</span></span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a><span class="co">#&gt;      Score 3967</span></span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a><span class="co">#&gt;   Gradient 4098</span></span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a><span class="co">#&gt; Method: Sampling-Based</span></span></code></pre></div>
 </div>
 <div id="multidimensional-model" class="section level2">
 <h2>Multidimensional Model</h2>
@@ -593,32 +593,32 @@ parameters is equal in a multidimensional 2PL model. This hypothesis is
 implemented as the type “multi_basic” we later use in the
 setup.hypothesis function. The parameters under the alternative
 hypothesis are taken from the LSAT7 dataset:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">expand.table</span>(LSAT7)</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> dat[, <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>)]  <span class="co"># re-ordering items so that items 1 and 2 of the resulting data frame are compared</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>model_an <span class="ot">&lt;-</span> <span class="st">&quot;F1 = 1-5</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="st">      F2 = 1-4&quot;</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>altpars <span class="ot">&lt;-</span> <span class="fu">mirt</span>(dat, <span class="at">model =</span> <span class="fu">mirt.model</span>(model_an),</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">expand.table</span>(LSAT7)</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>dat <span class="ot">&lt;-</span> dat[, <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>)]  <span class="co"># re-ordering items so that items 1 and 2 of the resulting data frame are compared</span></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>model_an <span class="ot">&lt;-</span> <span class="st">&quot;F1 = 1-5</span></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="st">      F2 = 1-4&quot;</span></span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>altpars <span class="ot">&lt;-</span> <span class="fu">mirt</span>(dat, <span class="at">model =</span> <span class="fu">mirt.model</span>(model_an),</span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <p>We setup the hypothesis:</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>hyp <span class="ot">&lt;-</span> <span class="fu">setup.hypothesis</span>(<span class="at">type =</span> <span class="st">&quot;multi_basic&quot;</span>, <span class="at">altpars =</span> altpars)</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>hyp <span class="ot">&lt;-</span> <span class="fu">setup.hypothesis</span>(<span class="at">type =</span> <span class="st">&quot;multi_basic&quot;</span>, <span class="at">altpars =</span> altpars)</span></code></pre></div>
 <p>We calculate the power using a sampling-based approach. We again
 encountered convergence problems using the default SE.type value, so we
 choose an alternative (SE.type = “Fisher”).</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">irtpwr</span>(<span class="at">hyp =</span> hyp, <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">power =</span> <span class="fl">0.8</span>,</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">&quot;sampling&quot;</span>, <span class="at">SE.type =</span> <span class="st">&quot;Fisher&quot;</span>)</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; EM cycles terminated after 5000 iterations.</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">irtpwr</span>(<span class="at">hyp =</span> hyp, <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">power =</span> <span class="fl">0.8</span>,</span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">&quot;sampling&quot;</span>, <span class="at">SE.type =</span> <span class="st">&quot;Fisher&quot;</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a><span class="co">#&gt; EM cycles terminated after 5000 iterations.</span></span></code></pre></div>
 <p>We can obtain the result using</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Sample sizes for power = 0.8 (alpha = 0.05): </span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Statistic    N</span></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       Wald 1584</span></span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         LR 1164</span></span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      Score 1151</span></span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Gradient 1167</span></span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Method: Sampling-Based</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="fu">summary</span>(res)</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="co">#&gt;  Sample sizes for power = 0.8 (alpha = 0.05): </span></span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a><span class="co">#&gt;  Statistic    N</span></span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a><span class="co">#&gt;       Wald 1584</span></span>
+<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a><span class="co">#&gt;         LR 1164</span></span>
+<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a><span class="co">#&gt;      Score 1151</span></span>
+<span id="cb20-9"><a href="#cb20-9" tabindex="-1"></a><span class="co">#&gt;   Gradient 1167</span></span>
+<span id="cb20-10"><a href="#cb20-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb20-11"><a href="#cb20-11" tabindex="-1"></a><span class="co">#&gt; Method: Sampling-Based</span></span></code></pre></div>
 </div>
 </div>
 
