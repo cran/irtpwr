@@ -1,6 +1,6 @@
-a9e39eaf5482ab900a496f88995f9bc3 *DESCRIPTION
+48fc1f71417c3f7add9112d4b8c4cf87 *DESCRIPTION
 32e47be343206a79ee14a6e028f934e6 *NAMESPACE
-5f7de44826abb24cc82e8d949902ccc4 *NEWS.md
+e5b5e7792bbac1a4edefc62c6b7a7699 *NEWS.md
 a3f95c201255a2635d7b2c50dfa9df08 *R/helper.R
 a398af112f9225d3719507c42cc51738 *R/hypothesis_templates.R
 f3e58303dabeb4e88ad17155f8c138dd *R/infmat.R
@@ -15,16 +15,16 @@ c18266b776666e76bf41f4941a048639 *R/summary.irtpwrresult.R
 1dddc5dd58a7eec88729133068bb9e1d *build/vignette.rds
 fbf957b8ad7d1f5bc4ab89c0885f565a *inst/doc/adding_hypotheses.R
 c5aa3e957b7ba7fc76c4e2380efee7cb *inst/doc/adding_hypotheses.Rmd
-bf18a5c10bf20829639a622808d7cad5 *inst/doc/adding_hypotheses.html
+4aa229b1b1fa03bed2395cec5a52824d *inst/doc/adding_hypotheses.html
 e9f05b9c40015f4b648883c894389b1d *inst/doc/demo.R
 d403113a2f87e6ac116c7f45da24d167 *inst/doc/demo.Rmd
-9fc3544b4d2cdd0e2b26250e09c06c4e *inst/doc/demo.html
+dac8c20c4655dab54255cb795ce5f2cb *inst/doc/demo.html
 20f8a9f67ad984d4dffda138ce02fd1a *inst/doc/hypothesis_templates.R
 0994dfe1daef84009d5b2af9901ef5f8 *inst/doc/hypothesis_templates.Rmd
 37e8a99d8a28b0ef3a9c862e68fc20e6 *inst/doc/hypothesis_templates.html
 8dd8baa90f7c260c86361791402464e8 *inst/doc/power_analysis.R
-fb575a5d8981c6a3cf7344def0705b4d *inst/doc/power_analysis.Rmd
-675f701661a3a9ccf1b97f75af3c8348 *inst/doc/power_analysis.html
+b1fe0297901b1ca899a8389cb6d7ff25 *inst/doc/power_analysis.Rmd
+139531b545db168d4f88b116c767cabe *inst/doc/power_analysis.html
 f6aea8a86071489069c9b0fbe58a2de5 *man/calc.time.Rd
 aa8217575240008686137f79279d617a *man/figures/README-unnamed-chunk-8-1.png
 941e1436b848496d5c4105cd7e69ba4f *man/irtpwr.Rd
@@ -37,4 +37,4 @@ f0aa45976fee2e4ec7c9c4c015a449d5 *man/summary.irtpwrresult.Rd
 c5aa3e957b7ba7fc76c4e2380efee7cb *vignettes/adding_hypotheses.Rmd
 d403113a2f87e6ac116c7f45da24d167 *vignettes/demo.Rmd
 0994dfe1daef84009d5b2af9901ef5f8 *vignettes/hypothesis_templates.Rmd
-fb575a5d8981c6a3cf7344def0705b4d *vignettes/power_analysis.Rmd
+b1fe0297901b1ca899a8389cb6d7ff25 *vignettes/power_analysis.Rmd

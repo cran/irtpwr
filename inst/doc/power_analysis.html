@@ -403,33 +403,39 @@ empirical study (a priori power analysis) and on the other hand where
 the package user has finished the data collection and now intends to
 perform a power analysis afterwards (a posteriori power analysis). This
 vignette aims to embed the R package into data analysis in psychology.
-At the same time, we want to show when and how can be used in
-practice.</p>
+At the same time, we want to show when and how <code>irtpwr</code> can
+be used in practice.</p>
 </div>
 <div id="general-workflow-for-irtpwr" class="section level1">
 <h1>2. General workflow for irtpwr</h1>
 <p>To conduct the power analysis for the Wald, LR, Score, and Gradient
-Tests using we will cover the two-step workflow in detail:</p>
+Tests using <code>irtpwr</code> we will cover the two-step workflow in
+detail:</p>
 <ul>
-<li>Setup Hypotheses ( function)</li>
-<li>Perform the power analysis ( function)</li>
+<li>Setup Hypotheses (<code>setup.hypothesis</code> function)</li>
+<li>Perform the power analysis (<code>irtpwr</code> function)</li>
 </ul>
-<p>Before we perform the power analysis with we setup the null and
-alternative hypothesis. The usage of is the following:</p>
+<p>Before we perform the power analysis with <code>irtpwr</code> we
+setup the null and alternative hypothesis. The usage of
+<code>setup.hypothesis</code> is the following:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">setup.hypothesis</span>(type, <span class="at">altpars =</span> <span class="cn">NULL</span>, <span class="at">nullpars =</span> <span class="cn">NULL</span>)</span></code></pre></div>
-<p>With the argument we define the hypothesis test we intend to conduct.
-If we e.g. want to perform a power analysis to test the Rasch model
-against the 2PL model we set .</p>
+<p>With the <code>type</code> argument we define the hypothesis test we
+intend to conduct. If we e.g. want to perform a power analysis to test
+the Rasch model against the 2PL model we set
+<code>type = &quot;1PLvs2PL&quot;</code>.</p>
 <p>There are currently three types available in the package:</p>
 <ul>
-<li>Testing a Rasch against a 2PL model (),</li>
-<li>Testing for DIF in a 2PL model (),</li>
-<li>Testing a PCM against a GPCM model ().</li>
+<li>Testing a Rasch against a 2PL model
+(<code>type = &quot;1PLvs2PL&quot;</code>),</li>
+<li>Testing for DIF in a 2PL model (<code>type = &quot;DIF2PL&quot;</code>),</li>
+<li>Testing a PCM against a GPCM model
+(<code>type = &quot;PCMvsGPCM&quot;</code>).</li>
 </ul>
-<p>In the next step we determine the parameters under the alternative ()
-and null () hypothesis. If we have already collected the data, we can
-use a fitted model (for a posteriori power analysis). However, if this
-is not the situation, we have the option to specify alternative
+<p>In the next step we determine the parameters under the alternative
+(<code>altpars</code>) and null (<code>nullpars</code>) hypothesis. If
+we have already collected the data, we can use a fitted
+<code>mirt</code> model (for a posteriori power analysis). However, if
+this is not the situation, we have the option to specify alternative
 parameters directly (for a priori power analysis). For example in cases
 where researchers assume a typical pattern in the item parameters and
 already know that they will test model fit or certain parameter values.
@@ -437,17 +443,17 @@ The determination of the parameters under the null hypothesis is not
 always necessary because they are often implicitly defined by the
 alternative hypothesis.</p>
 <p>Finally, we are now ready to perform the power analysis by passing
-the hypothesis to . Besides the hypothesis, an alpha level needs to be
-specified. The function can:</p>
+the hypothesis to <code>irtpwr</code>. Besides the hypothesis, an alpha
+level needs to be specified. The function can:</p>
 <ul>
 <li>calculate a necessary sample size N given a desired power (using the
-argument, e.g. )</li>
+<code>power</code> argument, e.g. <code>power = .8</code>)</li>
 <li>calculate the power for a specific sample size N (using the
-argument, e.g. )</li>
+<code>N</code> argument, e.g. <code>N = 600</code>)</li>
 </ul>
-<p>To get more insights into the usage of this vignette now provides
-some examples starting with the power analysis to test the Rasch model
-against the 2PL model.</p>
+<p>To get more insights into the usage of <code>irtpwr</code> this
+vignette now provides some examples starting with the power analysis to
+test the Rasch model against the 2PL model.</p>
 <p>To get ready, we first have to install the needed package:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;irtpwr&quot;</span>)</span></code></pre></div>
 <p>Then we have to load the package:</p>
@@ -523,14 +529,17 @@ the Rasch or the 2PL model. We aim to ensure that if a model comparison
 favors the 2PL model, we can confidently assert that this model choice
 provides the best fit for our expected data. This is only with a
 sufficiently large power possible. To conduct a power analysis we use
-the R package .</p>
-<p>To setup a hypothesis, we use the argument of the function to define
-the parameters under the alternative hypothesis of unequal slope
-parameters. We do not have to determine the null hypothesis of equal
-parameters because they are implicitly defined by the alternative
-hypothesis. Firstly, we generate distinct slope and intercept parameters
-for each item. Then we pass them into the argument from the function .
-Additionally, due to the underlying hypothesis test, we set the to .</p>
+the R package <code>irtpwr</code>.</p>
+<p>To setup a hypothesis, we use the <code>altpars</code> argument of
+the <code>setup.hypothesis</code> function to define the parameters
+under the alternative hypothesis of unequal slope parameters. We do not
+have to determine the null hypothesis of equal parameters because they
+are implicitly defined by the alternative hypothesis. Firstly, we
+generate distinct slope and intercept parameters for each item. Then we
+pass them into the <code>altpars</code> argument from the function
+<code>setup.hypothesis</code>. Additionally, due to the underlying
+hypothesis test, we set the <code>type</code> to
+<code>&quot;1PLvs2PL&quot;</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># parameters under the alternative hypothesis</span></span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>altpars <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="fu">rlnorm</span>(<span class="dv">5</span>, <span class="at">sdlog =</span> <span class="fl">0.4</span>),    </span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>                <span class="at">d =</span> <span class="fu">rnorm</span>(<span class="dv">5</span>))                  </span>
@@ -539,7 +548,8 @@ Additionally, due to the underlying hypothesis test, we set the to .</p>
 <p>The hypothesis is prepared for subsequent power analysis. We want to
 know the required sample size for a test of the Rasch against 2PL model
 for a power of 0.8 while using an alpha level of 0.05. Therefore, we
-transfer the previously defined hypothesis into the function:</p>
+transfer the previously defined hypothesis <code>&quot;hyp&quot;</code> into the
+<code>irtpwr</code> function:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">irtpwr</span>(<span class="at">hyp =</span> hyp, <span class="at">power =</span> <span class="fl">0.8</span>, <span class="at">alpha =</span> <span class="fl">0.05</span>)</span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">summary</span>(res)</span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
@@ -563,8 +573,9 @@ power:</p>
 <p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAA+VBMVEUAAAAAADoAAGYAOmYAOpAAZrYAv8QzMzM6AAA6ADo6AGY6OmY6OpA6ZrY6kNtNTU1NTW5NTY5NbqtNjshmAABmADpmAGZmOgBmOjpmOpBmZmZmtv9uTU1uTW5uTY5ubo5ubqtuq8huq+R8rgCOTU2OTW6OTY6Obk2ObquOyP+QOgCQOjqQOmaQZgCQkGaQtpCQ27aQ2/+rbk2rbm6rbo6rjk2r5OSr5P+2ZgC2Zjq22/+2///HfP/Ijk3I///bkDrb/7bb/9vb///kq27k///r6+vy8vL4dm3/tmb/yI7/25D/27b/29v/5Kv//7b//8j//9v//+T///9LZQ1aAAAACXBIWXMAAA7DAAAOwwHHb6hkAAANGklEQVR4nO2dD3vbthHGac92nTaRm85rtynZujjrZndr62Rb1JmJOrueZK92bH7/DzMcABLg3wPFAwlS9z61RVJgGv5yOIDAHRAlrEZFQ/8FQhcDQsSAEDEgRAwIEQNC1B7QtaXcSR8XPRBAxIAQMSBEDAgRA0LEgBAxIEQMCBEDQsSAEDEgRCMBFMcMqOFiHMcrBlR/UeAZUxXrW3F8kiQHB0P970O3oFh6n4ODEVlQr4Ck8zkQ9sOAqi6K2nWtzIcBVV3U5mNf9EAAUbiAjPkwoKqLlvkwoIqL+caLARUuyup1YPgwoPzFfPViQMWLZT4MyL5YcD8MqCDVuteU9EAAUWiAtHuuK+mBAKLAAMmRjTIfBmT4XCcVfBiQ4VNlPwwI48OALD6NJT0QQNQA6OProy9+lkd3L46ef0gv+wKUdn9GA+jxzWly9Ws4+vhaHGlW3gBl3cPRAPr4zYfk7g9gOHdf/5x8/PM7fd0PION/RgPIYDFHnwh5+WtA/2fAqYsG1QO6+SLFIqvY5z4tyG6/RmhB4KT/9NYjoFz7PhpAxgelZ0o+AFWNrgYP6PHNq7QVE3akjkD0gPLvp6MBpPtBYEQ3R0dZK08PqPD+Ph5ANaIGBB0g+/2CAeUvqg6i6+0eCCAaGpBqwJxv90AA0cCAGsbnGZAEVB7gYEDWxaKDZkB5lRw0AyoAKjpoBpTn0zjDw4Dik8YZnq0HJBxQUq5gDMgAgimwtrd7IIBoMEDVDogBZXwqekAMyOYDLXz72z0QQDQUINkDYkB1F3UFmyYgCsXiJ8Q5ngoNYkGyBdvodg8EEA0BKGvBGFANoPQdlQFVXkwrGAOqvmh1EekALaMo2jkXB//7t7kojm+fnNedOmoAQGYQiAzQcvciSdbRPEegQGMDOKDeAdnvGFSAHs7m8LHYu5wCoGszikgHaKYhHEbRTP6OZvIYqMjTeXb6cBZF++ECMh6aEJCoXZFCBATuj+ey0kk4T86l5dwezvXpw9m+KhEmoPxLPGErBl56XwH65VKRSgF9epGxS3m1UN+AcsP0tM38/XHqg9ayTdNEkoWqUvp0vXsRMCBpQJvfjvSDtH3cH++cWxYk0UVZjQsc0LUXQLraaCjrPVHH1jsWIEA0H0MVKxgQnQUtoJOYut81GNDhzjkcpyYjPvUplIKfMAHVJFp2BiR9tGzIFsLfCKez84PAIY6lReletj4NuJnPNfG0gPypR0DFCsaAioBKM/EMyL5YNqCxAyLO9qkI5Rg3ICvbB+Kku2b7VBjQyAEVsn26RtpXxQKNG5DJ1TAWtHm2TxyPZqInL5dsH8sbJZtakDCglrFSLSzov9XyDMjKF3v5Lrl53qmKVXmgsQMyPsiypY0BtQ8mCx6QyfbpbkFx3D6YLHhA+WyfLOFwM0DN6ymMFFCNNnhCCEdsHUy2VYCqmjAGZPhUNmEMyACqMaDeAK2jqjGyh7N5OuORqXShD0DSgNqzoAMEg67Z3GIOUOlPGgbQCluyxC8gBeL26eXtZ1/tXsAM61xOdPzqK2lBcspDfP13cV0d9wxIeSDPgFYlGUCZVdwezpP735zLC4sZBDvoo+W++G4G0yFDWJDyQANakLCdPKn7Ly/Ef9oHATFxBt+Jn0EAySZsSEDw7Icw1SqffhHBLCIcLiSgYzUN6wKoymt1BqSbsMF9kLAU5XHmAMKyoC8vMooYILegh7aANg1oJQMkZxLlVKuCoCbsbR+knQ9exZZ7l9SA4pNNA1rpAMkIoV0FB6YYRfMF04emFds5Ty3o4aypFZPVMYpKLV0nQBsHtBIC6iLPTjqbTGVANYA2j/gNEpCooHPMEbV5wnhigBZ7Px3PsdiQVoBWm0f8BghINPMyvqZlDFaDeprrCQtQCxOwxjkmYUGiH/QTMCoNDGwMqEtIdIiA5MhS1MynBSDhot2WbhsPIBe1ANQpZjxAQKIn7fAy5vww8eQAyfhG7E2jBaBuMeMhApIqv68xIEvrCKtmrg+Tn8uYBiBRxfABD2dAHYPqAwREOmDWOS2DDJAeBJNpY5iDbQYE47VkFmRew0IBJD+cxgTrAUnOND6oc1qGH0DlMdWWgIQWFK0YDLV2Y9EK0ElJXixIVVPkXcMRUOe0jFaAnH1QWz7FnjTyHuYMKB2rDwmQ+JDzG5sDcpMboO5pGT4AqQT7DoCWVG/zoQJqk0pXAUjypRgPKrTxAwOSzmdft2KHDl6kDpDuKBKMKFIk9pAB6qYGQFl8/dUR6NQdkD1SNiVA+Spmsn1AN22yfco1bCKAck46t6+GCbR3AlSOSZwIIFu5LY+0Kbll+8QnPSf2DAPIztCwDMjBgqqifqdgQYv8YIBtQcYDOQCqcNGTALQQryl2R9P2Qe9fmTtwQGUXPQVAMlDNDsIz2T7J41tTwxwA0aSGhQZIdoJy4dYm28d2QSggqGEULMIHVCMUEFFqGAPaUkDQCSJhER6gKFWnl1Wy3LnQADkLBUSU+UQHCP7tNw4KowZUHKwPAJBaNrD1YLQvQGTJhWSA5EiZzFmRIeM6/QlSoyqyn3wDgk4QEYtWgA5KMoAezpT1QC94vXepUw8OhVmpTKh+Aa2GAdTspNdRmm0gc6GyxBaVCdUvILrsS0JAiVpCUOaNAZmHb3XmT7rIcm+A5GtGaIDWshYt5mULwqzHA6BVgIBkKyaYgA8SXEz6k86E6hUQYXoqGSBZlaAm5Vox2bQdozWMFpB6kQ8OUCfRAloxoGZAlNmXEwQUM6BmxauB1nELC1CDBZFmX47WgmofJn2RZ0B1gGjzd6cIiDQ9dXKAsqEyBlQDiDjBeYKAaNNTpwYoZkBadYCoU+QnB4g6wZkM0GKu9h7TI2dJFhjstF4SFaA4XEDLmfj5/UwdDAdoFSyg26eXD99+D7/UXmNyXFEvg9cjIPIE51aA4pIMIFjT7Xf/+RssxqXXwDPL4PUGyJ5QDc2CYA7jGQzaP0t5mUXM+gNEnyJPBihZzpfzZD1bqr1/1Bp4ehm8HgGRJzjTAVrv/yhq1rMfz9M18Pq3oDhoQPe/fXopKtpn2Rp4/fugXGBrcIBUDtQCfqk18OTs6lnnVsxsFvH4BlmyPRcUFBygTnLZuiZ5f4oks2wlIBNIbratqQGUDx3fFkDWxiNf/1NXsZpklnjgXWmGAWSSWe5enEpcSlUW5GMNgVFZUPPOLIW4xP4B+ZSTD/orAsjLGgLBA7KSWd43V7EtBWQns7xu2sKvmP60NYBqVAbkZxWKSQHywWIygEr5YQyoAMjTMh0TAuRnkQUGtCWA4pWnZTomA8jXMh0MaDsAVSSBM6AcIG/LdDCgrQBUlaLKgGxA/pbpYEAMiAF5XSpotIBsDT3f04M6WpDHhV5Ga0E2n5hmk/TpAvK50AsDYkBbDyg+8bnQyxQAeV0JhwFNHlB5NJoBgQwgvyvhMCAGtOWAhAvyymL8gDwvFcSAJg5IvMn7ZTF6QL7XUmJADGjqgEy2D+xdk4W5aj4nvhebCh5QPtvHSAPyvhpX8IBMpH1uUwT9Vz1hQCZDQ9Q1vTmUle1zMPkJHyWnbJ+X7ywr0v+W3hebGpEFSb0v7C/GgHLbZzGgsky2D1S2x3/km3n/i00FD8jK9hH9oGLWMwOqVV8sGBADYkAMqEoMCBEDQsSAEDEgRAwIEQNCxIC6ymE3aI8lqcWAEDEgRAwIkQdA0xIDQsSAEDEgRAwIESEgmMxPIx5M4ENVOTkF4FDy7oWMmXAo6U+EgK6OThMd8WAFPpSlFj51KAnTlldOJT2KDtDdH/9yms42FiYdc9ILnzqUlHO733xwKOlRZIAe3/7rzWk6X12Yts5JL3zqUFJbkENJjyIDdPUK6oCOeDCBD2XphU8dSmqv41LSn6gAiUd+dLUgu0hjyZfvkpvnH6ZhQRCld3T0ysUHqYVPHUpqm5mID1LNvI54sJY5LUstfOpQUluQy5/pTwP0g/TCpw4lb45ce0z+xD1pRAwIEQNCxIAQMSBEDAgRFaBlFEU750ih2yeFEuldpS/CERGg5e5Fgm8mVOTgdtewogGkN6Ja7F02FisAcrxrWFEBSvdXlLsIRjPB4ntxMNN7Cj75LooEBgD0cAZboBXugi2t4D4obBUIQURVbA1QQLDFGVSd20MBZAlU5MnuBexhJTjIrayW2mayu7RpwZe5AgGIrBUDfyse7Rd4MmkQc7CmuXUiPp+cr8E4JEX7Lg0IKluhwOCibObvj+Effi1bJvnI6S/5KR5afC5lRYpm+bsUIOmzywWGFWk/SDzn/bFotlMmVYDKlSctsJbdhIBqlxQNIF1FoApJIypakKxin17A91ZnydwFR/qbNdqb6ldEFrSAxwL/Cs93e1gCZDlp8DMaQnZXCjGBU6tAAKLsSUd6I9OdH2RtsqvYd5kvhlY8e/z0LvHFQrqenUKB4dXLu1jAbxKoGBAiBoSIhzsQMSBEDAgRA0LEgBAxIEQMCNH/Aa0fFOZgqjNQAAAAAElFTkSuQmCC" /><!-- --></p>
 <p>A second reflection about our study design revealed that we want a
 higher statistical power. The alternative and null hypothesis remain
-unchanged. We take the saved result object and modify it within the
-generic function:</p>
+unchanged. We take the saved <code>irtpwr</code> result object
+<code>res</code> and modify it within the generic <code>summary</code>
+function:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">summary</span>(res, <span class="at">power =</span> <span class="fl">0.9</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt; Sample sizes for power = 0.8 (alpha = 0.05): </span></span>
@@ -589,24 +600,26 @@ conclude which one would provide the best model fit. To allow a reliable
 model comparison we need a minimum of 80% statistical power. To do this,
 we conduct a posteriori power analysis. First of all we need the dataset
 from our math test. We use the LSAT 7 dataset which is included in the
-package. The dataset includes 5 columns (for each item one) and 1000
-rows (for each participant one). One row shows for each item if the
-participant answered this item correctly (coded with 1) or not (coded
-with 0). For the first time we now have to install and load the
-package:</p>
+<code>mirt</code> package. The dataset includes 5 columns (for each item
+one) and 1000 rows (for each participant one). One row shows for each
+item if the participant answered this item correctly (coded with 1) or
+not (coded with 0). For the first time we now have to install and load
+the <code>mirt</code> package:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;mirt&quot;</span>)</span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;mirt&quot;</span>)</span></code></pre></div>
 <p>We load the data with:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">expand.table</span>(LSAT7)</span></code></pre></div>
-<p>For the power analysis we again have to define the and parameters
-under the alternative hypothesis. In this situation where the data is
-collected we can use a fitted model. Hence, we fit a 2PL model to
-analyze our data and obtain the parameters associated with the
-alternative hypothesis of unequal slopes. To fit a 2PL model one can
-execute the following code:</p>
+<p>For the power analysis we again have to define the <code>type</code>
+and parameters under the alternative hypothesis. In this situation where
+the data is collected we can use a fitted <code>mirt</code> model.
+Hence, we fit a 2PL model to analyze our data and obtain the parameters
+associated with the alternative hypothesis of unequal slopes. To fit a
+2PL model one can execute the following code:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>mirtfit <span class="ot">&lt;-</span> <span class="fu">mirt</span>(dat, <span class="dv">1</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
-<p>The fitted 2PL model is then used for the argument from the function
-. As above we set . We write the following code:</p>
+<p>The fitted 2PL model <code>mirtfit</code> is then used for the
+<code>altpars</code> argument from the function
+<code>setup.hypothesis</code>. As above we set
+<code>type = &quot;1PLvs2PL&quot;</code>. We write the following code:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>hyp <span class="ot">&lt;-</span> <span class="fu">setup.hypothesis</span>(<span class="at">type =</span> <span class="st">&quot;1PLvs2PL&quot;</span>, <span class="at">altpars =</span> mirtfit)</span></code></pre></div>
 <p>To calculate the power for a sample size of 1000 using our hypothesis
 from above we run:</p>
@@ -632,11 +645,13 @@ data it would be better to assume unequal slope parameter.</p>
 can be plotted with:</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">plot</span>(res) </span></code></pre></div>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
-<p>The function builds on one of two available methods that are
-described in our paper in more detail (Zimmer et al. (2022), <a href="https://doi.org/10.1007/s11336-022-09883-5" class="uri">https://doi.org/10.1007/s11336-022-09883-5</a>):</p>
+<p>The <code>irtpwr</code> function builds on one of two available
+methods that are described in our paper in more detail (Zimmer et
+al. (2022), <a href="https://doi.org/10.1007/s11336-022-09883-5" class="uri">https://doi.org/10.1007/s11336-022-09883-5</a>):</p>
 <ul>
-<li>an analytical approach (, this is the default option)</li>
-<li>a sampling-based approach ()</li>
+<li>an analytical approach (<code>method = “analytical”</code>, this is
+the default option)</li>
+<li>a sampling-based approach (<code>method = “sampling”</code>)</li>
 </ul>
 <p>To use the sampling based approach, we can execute:</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">irtpwr</span>(<span class="at">hyp =</span> hyp, <span class="at">N =</span> <span class="dv">600</span>, <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">method =</span> <span class="st">&quot;sampling&quot;</span>)</span>
@@ -653,15 +668,16 @@ described in our paper in more detail (Zimmer et al. (2022), <a href="https://d
 <span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a><span class="co">#&gt; Method: Sampling-Based</span></span></code></pre></div>
 <p>The sampling-based approach offers two parameters that can be
 increased from their default values to obtain a more exact result. These
-are the sample size of the sampling-based approach () and the sample
-size for the approximation of the Fisher expected matrix (). These may
-be tweaked upwards if the result from repeated executions of the
-function is not stable.</p>
+are the sample size of the sampling-based approach
+(<code>sampling.npers</code>) and the sample size for the approximation
+of the Fisher expected matrix (<code>approx.npers</code>). These may be
+tweaked upwards if the result from repeated executions of the
+<code>irtpwr</code> function is not stable.</p>
 <p>Since the analytical approach can be too time-intensive for larger
 numbers of items, we might want to know beforehand how long it will take
-approximately. We do so using the function. In our example hypothesis,
-we used 5 items. To estimate the computation time (in seconds) for 10
-items we can use:</p>
+approximately. We do so using the <code>calc.time</code> function. In
+our example hypothesis, we used 5 items. To estimate the computation
+time (in seconds) for 10 items we can use:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">calc.time</span>(hyp, <span class="at">n.items =</span> <span class="dv">10</span>)</span>
 <span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a></span>
 <span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co">#&gt; [1] 103.488</span></span></code></pre></div>
@@ -670,7 +686,7 @@ time. As a result from our test runs, we suggest to expect an increase
 of 80% as a worst case scenario. Is the estimated computational load
 when using the analytical default setting too large, we can use the
 sampling-based approach for these applications. The interpretation of
-the output remains the same.</p>
+the <code>irtpwr</code> output remains the same.</p>
 </div>
 </div>
 <div id="dif-analysis-in-2pl-model" class="section level1">
@@ -719,10 +735,11 @@ parameter of 0.5 and in the a parameter of 2 in a 2PL model? We assume
 standard normally distributed person parameters for all
 participants.</p>
 <p>In the previous chapter we have already seen the Rasch against 2PL
-hypothesis setup. The procedure for the DIF in 2PL hypothesis () is
-analogous, yet a bit more complicated since we need to define two
-groups, the native and non-native English speaking group. The package is
-already loaded so we can start with our example:</p>
+hypothesis setup. The procedure for the DIF in 2PL hypothesis
+(<code>type = &quot;DIF2PL&quot;</code>) is analogous, yet a bit more complicated
+since we need to define two groups, the native and non-native English
+speaking group. The package is already loaded so we can start with our
+example:</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>native <span class="ot">&lt;-</span> nonnative <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="fu">rlnorm</span>(<span class="dv">5</span>, <span class="at">sdlog =</span> <span class="fl">0.2</span>), </span>
 <span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>                            <span class="at">d =</span> <span class="fu">rnorm</span>(<span class="dv">5</span>))               </span>
 <span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a></span>
@@ -734,13 +751,14 @@ already loaded so we can start with our example:</p>
 <span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a>hyp <span class="ot">&lt;-</span> <span class="fu">setup.hypothesis</span>(<span class="at">type =</span> <span class="st">&quot;DIF2PL&quot;</span>, <span class="at">altpars =</span> altpars)</span></code></pre></div>
 <p>Note that for both hypothesis types, we do not have to provide the
 parameters under the null hypothesis here, because they are implicitly
-defined by the alternative hypothesis. The function also allows for
-specifying parameters under the null hypothesis via the argument for
-cases in which the parameters under the null hypothesis are not
-identified by the parameters under the alternative. To implement such
-custom hypotheses, we provide additional guidance in the
-“adding_hypotheses” vignette. Some templates for hypothesis objects are
-included in the “hypothesis_templates” vignette.</p>
+defined by the alternative hypothesis. The <code>setup.hypothesis</code>
+function also allows for specifying parameters under the null hypothesis
+via the <code>nullpars</code> argument for cases in which the parameters
+under the null hypothesis are not identified by the parameters under the
+alternative. To implement such custom hypotheses, we provide additional
+guidance in the “adding_hypotheses” vignette. Some templates for
+hypothesis objects are included in the “hypothesis_templates”
+vignette.</p>
 <p>Given the specifications we already made, we now can obtain the
 sample size necessary for reaching a power of 0.8 while using an alpha
 level of 0.05. We perform the power analysis with:</p>
@@ -794,12 +812,13 @@ The first 6 rows are shown:</p>
 <p>Now after we have collected the data in an extensive study we
 estimate the item parameter along the covariate language. Once again, we
 assume the possibility of the presence of DIF in item 1. The item
-parameter are estimated for each group by using the function from the
-package . But first we have to define a newmodel where we constrain the
-slopes and intercepts across groups for item 2 to 5. The parameters from
-item 1, our item of interest, may vary between the groups. We assume
-standard normally distributed person parameters for all participants.
-This results in the following code:</p>
+parameter are estimated for each group by using the function
+<code>multipleGroup</code> from the package <code>mirt</code>. But first
+we have to define a newmodel where we constrain the slopes and
+intercepts across groups for item 2 to 5. The parameters from item 1,
+our item of interest, may vary between the groups. We assume standard
+normally distributed person parameters for all participants. This
+results in the following code:</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>newmodel <span class="ot">&lt;-</span> <span class="st">&#39;</span></span>
 <span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="st">    F = 1-5</span></span>
 <span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a><span class="st">    CONSTRAINB = (2-5, a1), (2-5, d)&#39;</span></span>
@@ -865,8 +884,9 @@ DIF hypothesis, we execute:</p>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
 <p>In sum the power to detect DIF if it really exists in item 1 is too
 low. We can obtain the sample size necessary for reaching a power of
-0.9. The object resulting from can be used to gather further information
-about the relationship between sample size and power:</p>
+0.9. The object resulting from <code>irtpwr</code> can be used to gather
+further information about the relationship between sample size and
+power:</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="fu">summary</span>(res, <span class="at">power =</span> <span class="fl">0.9</span>) </span>
 <span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a></span>
 <span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a><span class="co">#&gt;  Sample sizes for power = 0.9 (alpha = 0.05): </span></span>
