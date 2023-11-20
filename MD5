@@ -1,7 +1,8 @@
-48fc1f71417c3f7add9112d4b8c4cf87 *DESCRIPTION
+7ac91d4a533cf0dd897abe6b467beb1e *DESCRIPTION
 32e47be343206a79ee14a6e028f934e6 *NAMESPACE
-e5b5e7792bbac1a4edefc62c6b7a7699 *NEWS.md
-a3f95c201255a2635d7b2c50dfa9df08 *R/helper.R
+21f922f73d84332c4be48e830e1eb839 *NEWS.md
+2bc567d08b35277a14ec699bb93275d4 *R/calc.pvalues.R
+f1092c6e0299813e76b82c4f31ce4a36 *R/helper.R
 a398af112f9225d3719507c42cc51738 *R/hypothesis_templates.R
 f3e58303dabeb4e88ad17155f8c138dd *R/infmat.R
 de9c6110871a432144bd17b6a1c52044 *R/irtpwr.R
@@ -15,10 +16,10 @@ c18266b776666e76bf41f4941a048639 *R/summary.irtpwrresult.R
 1dddc5dd58a7eec88729133068bb9e1d *build/vignette.rds
 fbf957b8ad7d1f5bc4ab89c0885f565a *inst/doc/adding_hypotheses.R
 c5aa3e957b7ba7fc76c4e2380efee7cb *inst/doc/adding_hypotheses.Rmd
-4aa229b1b1fa03bed2395cec5a52824d *inst/doc/adding_hypotheses.html
+26273cb25036d278235d1c52615977de *inst/doc/adding_hypotheses.html
 e9f05b9c40015f4b648883c894389b1d *inst/doc/demo.R
 d403113a2f87e6ac116c7f45da24d167 *inst/doc/demo.Rmd
-dac8c20c4655dab54255cb795ce5f2cb *inst/doc/demo.html
+860d3550345314e565e6c9b9af1b82da *inst/doc/demo.html
 20f8a9f67ad984d4dffda138ce02fd1a *inst/doc/hypothesis_templates.R
 0994dfe1daef84009d5b2af9901ef5f8 *inst/doc/hypothesis_templates.Rmd
 37e8a99d8a28b0ef3a9c862e68fc20e6 *inst/doc/hypothesis_templates.html

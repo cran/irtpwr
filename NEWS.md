@@ -1,3 +1,7 @@
+# irtpwr 1.0.3
+
+* Added a function to calculate statistics and p values for hypothesis tests (`calc.pvalues`)
+
 # irtpwr 1.0.2
 
 * Fixed missing words in a vignette
